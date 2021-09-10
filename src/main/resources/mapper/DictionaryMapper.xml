@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stars.datachange.mapper.DictionaryMapper">
+
+  <resultMap id="dbDataResultMap" type="com.stars.datachange.model.response.DataDictionaryResult">
+    <id column="name" jdbcType="VARCHAR" property="name" />
+    <collection property="maps" ofType="com.stars.datachange.model.response.DataDictionaryResult$Map">
+      <result column="code" jdbcType="VARCHAR" property="code" />
+      <result column="value" jdbcType="VARCHAR" property="value" />
+    </collection>
+  </resultMap>
+  
+  <!-- 根据类型查询字典信息 -->
+  <select id="findList" parameterType="com.stars.datachange.autoconfigure.StarsProperties$Dictionary" resultMap="dbDataResultMap">
+    select ${dictionary.fieldName} name, ${dictionary.fieldCode} code, ${dictionary.fieldValue} value from ${dictionary.tableName}
+    where ${dictionary.fieldParentId} = (
+      select ${dictionary.fieldId} from ${dictionary.tableName} where ${dictionary.fieldName} = #{key, jdbcType=VARCHAR}
+    )
+  </select>
+</mapper>
