@@ -10,7 +10,6 @@
     </collection>
   </resultMap>
   
-  <!-- 根据类型查询字典信息 -->
   <select id="findList" parameterType="com.stars.datachange.autoconfigure.StarsProperties$Dictionary" resultMap="dbDataResultMap">
     select ${dictionary.fieldName} name, ${dictionary.fieldCode} code, ${dictionary.fieldValue} value from ${dictionary.tableName}
     where ${dictionary.fieldParentId} = (
