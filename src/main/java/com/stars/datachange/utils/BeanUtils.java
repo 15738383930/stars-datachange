@@ -9,18 +9,19 @@ import java.util.Map;
 
 /**
  * Bean工具类
- * @Author zhou
- * @Date 2021/9/9 15:16
+ * @author zhou
+ * @since 2021/9/9 15:16
  */
 public class BeanUtils extends org.springframework.beans.BeanUtils {
 
     /**
      * map转对象
-     * @param map
-     * @param beanClass
+     * @param map map参数
+     * @param beanClass 要转换成的bean
      * @return java.lang.Object
      * @author zhouhao
      * @since  2021/9/9 15:16
+     * @throws java.lang.Exception 异常
      */
     public static Object mapToBean(Map<String, Object> map, Class<?> beanClass) throws Exception {
         if (map == null) {
@@ -43,10 +44,11 @@ public class BeanUtils extends org.springframework.beans.BeanUtils {
 
     /**
      * 对象转map
-     * @param obj
-     * @return java.util.Map<?,?>
+     * @param obj 对象
+     * @return java.util.Map
      * @author zhouhao
      * @since  2021/9/9 15:22
+     * @throws java.lang.Exception 异常
      */
     public static Map<String, Object> beanToMap(Object obj) throws Exception {
         if(obj == null) {

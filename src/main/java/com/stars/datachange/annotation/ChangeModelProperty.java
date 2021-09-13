@@ -21,6 +21,9 @@ public @interface ChangeModelProperty {
 
     /**
      * Chinese name of attribute
+     * @return String
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     @AliasFor("value")
     String chinese() default "";
@@ -28,38 +31,59 @@ public @interface ChangeModelProperty {
     /**
      * Need ignore delimiter of chinese<p>
      *     After using this delimiter, in {@link ChangeModelProperty#chinese}, the text after the delimiter will be ignored
+     * @return String
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     String chineseIgnoreDelimiter() default "：";
 
     /**
      * To be determined
+     * @return String
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     String english() default "";
 
     /**
      * Need bit operation
+     * @return boolean
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     boolean bitOperation() default false;
 
     /**
      * Need split
+     * @return boolean
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     boolean split() default false;
 
     /**
      * Delimiter of split<p>
      *      Take effect when {@link ChangeModelProperty#split} is true
+     * @return String
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     String delimiter() default ",";
 
     /**
      * Need ignore data change<p>
      *      When true, the corresponding attribute will not be processed for data change
+     * @return boolean
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     boolean ignore() default false;
 
     /**
-     * Skip the comparison of new and old data for this attribute<p>
+     * Skip the comparison of new and old data for this attribute<br>
+     * @return boolean
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     boolean skipComparison() default false;
 }

@@ -20,21 +20,31 @@ public @interface ChangeModel {
 
     /**
      * code model of need to change data
+     * @return Class
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     @AliasFor("value")
     Class<? extends  Enum> modelCode() default Enum.class;
 
     /**
+
      * Shortcut mode<p>
      *     When set to true, all attributes under the data model will be marked with data conversion identification<p>
      *     PS: When set to true, some functions of data conversion cannot be used, for example:
-     *     {@link com.ucan.shweilao.utils.DataChangeUtils#dataContrast(Object, Object)}
+     *     {@link com.stars.datachange.utils.DataChangeUtils#dataContrast(Object, Object)}
+     * @return boolean
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     boolean quick() default false;
 
     /**
      * Data conversion source mode<p>
      *     Provide {@link ChangeModel#modelCode} mode and database dictionary table model
+     * @return Source
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     Source source() default Source.ENUM;
 
@@ -42,6 +52,9 @@ public @interface ChangeModel {
      * Data model name<p>
      *     It takes effect when {@link ChangeModel#source} is set to {@code Source.DB}.
      *     The default is the class name under {@link ChangeModel} (naming convention: camel case, lowercase first letter)
+     * @return String
+     * @author zhouhao
+     * @since  2021/9/13 14:06
      */
     String modelName() default "";
 

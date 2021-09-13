@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * 外部配置属性
  * @author zhou
- * @date 2021/6/30 13:37
+ * @since 2021/6/30 13:37
  */
 @Component
 public final class StarsProperties {

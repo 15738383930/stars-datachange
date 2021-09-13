@@ -15,8 +15,9 @@ public interface DictionaryMapper {
 
     /**
      * 查询数据字典
-     * @param dictionary
-     * @return
+     * @param dictionary 字典配置
+     * @param key 字典对象名
+     * @return 字典结果集
      */
     Set<DataDictionaryResult> findList(@Param("dictionary") StarsProperties.Dictionary dictionary, @Param("key") String key);
 

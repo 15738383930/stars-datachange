@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * 数据转换工具类
  * @author zhou
- * @date 2021/9/6 10:00
+ * @since 2021/9/6 10:00
  */
 @Component
 public final class DataChangeUtils {
@@ -37,12 +37,13 @@ public final class DataChangeUtils {
     /**
      * 数据转换
      * <br>
-     * <li>调用此方法，可以使你的属性code，转换为相对应的文字；
-     * <li>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
      * @param data 数据集
-     * @return java.util.Map<java.lang.String,java.lang.Object>
+     * @return java.util.Map
      * @author zhouhao
      * @since  2021/9/7 11:14
+     * @throws java.lang.Exception 异常
      */
     public static Map<String, Object> dataChange(Object data) throws Exception {
         return dataChange(data, null);
@@ -102,10 +103,11 @@ public final class DataChangeUtils {
     /**
      * 数据转换对比
      * <br>
-     * <li>调用此方法，可以找出两个对象的差异，并收集差异
+     * <br>调用此方法，可以找出两个对象的差异，并收集差异
      * @param oldData 变更前的数据
      * @param newData 变更后的数据
      * @return 数据转换对比后的结果集
+     * @throws java.lang.Exception 异常
      */
     public static List<DataChangeContrastResult> dataContrast(Object oldData, Object newData) throws Exception {
         List<DataChangeContrastResult> result = new ArrayList<>();
@@ -142,9 +144,10 @@ public final class DataChangeUtils {
      * @param data 多选值（逗号分割）
      * @return java.lang.String 转义后的多选值（逗号分割）
      * @author zhouhao
-     * @date  2020/5/29 15:01
+     * @since  2020/5/29 15:01
+     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data) throws Exception {
         return splitConversion(modelCode, key, data, ",");
     }
 
@@ -154,9 +157,10 @@ public final class DataChangeUtils {
      * @param data 多选值（逗号分割）
      * @return java.lang.String 转义后的多选值（逗号分割）
      * @author zhouhao
-     * @date  2020/5/29 15:01
+     * @since  2020/5/29 15:01
+     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data) throws Exception {
         return splitConversion(result, key, data, ",");
     }
 
@@ -167,9 +171,10 @@ public final class DataChangeUtils {
      * @param delimiter 分割符
      * @return java.lang.String 通过delimiter转义后的多选值
      * @author zhouhao
-     * @date  2020/5/29 15:01
+     * @since  2020/5/29 15:01
+     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data, String delimiter) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data, String delimiter) throws Exception {
         if(StringUtils.isEmpty(delimiter)){
             return splitConversion(modelCode, key, data);
         }
@@ -197,9 +202,10 @@ public final class DataChangeUtils {
      * @param delimiter 分割符
      * @return java.lang.String 通过delimiter转义后的多选值
      * @author zhouhao
-     * @date  2020/5/29 15:01
+     * @since  2020/5/29 15:01
+     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data, String delimiter) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data, String delimiter) throws Exception {
         if(StringUtils.isEmpty(delimiter)){
             return splitConversion(result, key, data);
         }
@@ -227,9 +233,10 @@ public final class DataChangeUtils {
      * @param value 属性代码
      * @return java.lang.Object 转义后的值
      * @author zhouhao
-     * @date  2020/5/29 13:16
+     * @since  2020/5/29 13:16
+     * @throws java.lang.Exception 异常
      */
-    private static Object getValue(Class<? extends  Enum> modelCode, String key, String value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static Object getValue(Class<? extends  Enum> modelCode, String key, String value) throws Exception {
         return modelCode.getMethod("getValue", String.class, String.class).invoke(modelCode, key, value);
     }
 
@@ -240,9 +247,9 @@ public final class DataChangeUtils {
      * @param code 属性代码
      * @return java.lang.Object 转义后的值
      * @author zhouhao
-     * @date  2020/5/29 13:16
+     * @since  2020/5/29 13:16
      */
-    private static String getValue(Set<DataDictionaryResult> result, String name, String code) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private static String getValue(Set<DataDictionaryResult> result, String name, String code) {
         List<DataDictionaryResult> collect = result.stream().filter(o -> o.getName().equals(name)).collect(Collectors.toList());
         if(CollectionUtils.isEmpty(collect)){
             return code;
@@ -258,9 +265,9 @@ public final class DataChangeUtils {
      * 位运算
      * <br>
      * <br>实现思路：
-     *      <li>把位运算的数值转换为二进制码，把二进制码反转方便后面遍历计算。
-     *      <li>遍历二级制码时，遇1计算当前指针的平方，即：得出的多选值code，并添加到多选值列表中
-     *      <li>遍历结束后，按照多选值的大小进行排序并以逗号分隔的形式返回
+     *      <br>把位运算的数值转换为二进制码，把二进制码反转方便后面遍历计算。
+     *      <br>遍历二级制码时，遇1计算当前指针的平方，即：得出的多选值code，并添加到多选值列表中
+     *      <br>遍历结束后，按照多选值的大小进行排序并以逗号分隔的形式返回
      * @param num 位数值
      * @return java.lang.String 运算后的多选值（逗号分隔）
      * @Author zhouhao

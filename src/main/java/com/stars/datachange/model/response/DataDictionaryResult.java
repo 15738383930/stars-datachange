@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 /**
  * 数据字典模型
  * @author zhou
- * @date 2021/9/9 11:01
+ * @since 2021/9/9 11:01
  */
 @Data
 public class DataDictionaryResult {
