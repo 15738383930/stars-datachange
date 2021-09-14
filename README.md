@@ -8,8 +8,9 @@
 
 #### 安装教程
 
+开箱即用：导入星星数据转换依赖
+
 ``` bash
-导入星星数据转换依赖即可
 <!-- https://mvnrepository.com/artifact/com.gitee.xuan_zheng/stars-datachange -->
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
