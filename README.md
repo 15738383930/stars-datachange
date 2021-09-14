@@ -51,9 +51,16 @@ ps:动态数据字典模式，需要你的项目连接数据库。
 ![数据字典配置](https://images.gitee.com/uploads/images/2021/0914/185321_4d8e2880_5384206.png "数据字典配置.png")
 
 ``` bash
-3. 执行
+3. 标记要使用动态数据转换功能的数据模型，如下图：
+ps： _需要切换到DB源模式，modelName=数据模型名称（最好以小写开头，默认为小写数据模型名称），对应字典表中父字典的字段名（步骤1图中parent_id=0的列：TYPE，当然这些字段都可根据步骤二进行自定义配置）_ 
+```
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0914/185916_02e7d732_5384206.png "屏幕截图.png")
+
+``` bash
+4. 执行
 ```
 ![数据转换](https://images.gitee.com/uploads/images/2021/0914/163139_e15ee7d8_5384206.png "屏幕截图.png")
+
 
 #### 参与贡献
 
