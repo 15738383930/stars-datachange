@@ -8,7 +8,7 @@
 
 #### 安装教程
 
-开箱即用：导入**数据转换依赖
+导入**数据转换依赖即可
 
 ``` bash
 <!-- https://mvnrepository.com/artifact/com.gitee.xuan_zheng/stars-datachange -->
