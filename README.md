@@ -1,14 +1,14 @@
 # stars-datachange
 
 #### 介绍
-星星开源数据转换工具，强大的可插拔、非侵入式设计，两种数据源转换结构，可以优雅的使你的数据字典转换为你想要的结果。
+**开源数据转换工具，强大的可插拔、非侵入式设计，两种数据源转换结构，可以优雅的使你的数据字典转换为你想要的结果。
 
 #### 软件架构
 基于springboot、mybatis
 
 #### 安装教程
 
-开箱即用：导入星星数据转换依赖
+开箱即用：导入**数据转换依赖
 
 ``` bash
 <!-- https://mvnrepository.com/artifact/com.gitee.xuan_zheng/stars-datachange -->
