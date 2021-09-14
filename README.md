@@ -19,7 +19,7 @@
 </dependency>
 ```
 
-#### 使用说明
+#### 使用说明（方式一：数据字典枚举）
 
 ``` bash
 1. 定义数据字典枚举，demo可在依赖包中找到，如下图：
@@ -29,7 +29,24 @@
 ``` bash
 2. 标记要使用数据转换功能的数据模型，如下图：
 ```
-![数据模型](https://images.gitee.com/uploads/images/2021/0914/162728_692d2d18_5384206.png "屏幕截图.png")
+![数据模型](https://images.gitee.com/uploads/images/2021/0914/162728_692d2d18_5384206.png "数据模型.png")
+
+``` bash
+3. 执行
+```
+![数据转换](https://images.gitee.com/uploads/images/2021/0914/163139_e15ee7d8_5384206.png "数据转换.png")
+
+#### 使用说明（方式二：动态数据字典）
+
+``` bash
+1. 找到你的字典表(没有请参考下图创建)，如下图：
+```
+![字典表](https://images.gitee.com/uploads/images/2021/0914/185007_7dff798a_5384206.png "字典表.png")
+
+``` bash
+2. 在配置文件中加入数据字典配置（图中几个属性分别对应表名和表中字段），如下图：
+```
+![数据字典配置](https://images.gitee.com/uploads/images/2021/0914/185321_4d8e2880_5384206.png "数据字典配置.png")
 
 ``` bash
 3. 执行
