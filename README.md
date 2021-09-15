@@ -56,13 +56,21 @@ ps：图中字段都可自定义（详见步骤二），这里按图中字段讲
 ![数据字典配置](https://images.gitee.com/uploads/images/2021/0914/185321_4d8e2880_5384206.png "数据字典配置.png")
 
 ``` bash
-3. 标记要使用动态数据转换功能的数据模型，如下图：
+3. 在配置文件中追加mapper-locations配置，如下图：
+```
+![mapper-locations配置](https://images.gitee.com/uploads/images/2021/0914/185321_4d8e2880_5384206.png "mapper-locations配置.png")
+
+
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0915/112908_42261844_5384206.png "屏幕截图.png")
+
+``` bash
+4. 标记要使用动态数据转换功能的数据模型，如下图：
 ps： 需要切换到DB源模式，modelName——数据模型名称（值默认为首字母小写的数据模型名称），对应字典表中父字典的列——type的值
 ```
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/0914/185916_02e7d732_5384206.png "屏幕截图.png")
 
 ``` bash
-4. 执行
+5. 执行
 ```
 ![数据转换](https://images.gitee.com/uploads/images/2021/0914/163139_e15ee7d8_5384206.png "屏幕截图.png")
 
