@@ -56,12 +56,9 @@ ps：图中字段都可自定义（详见步骤二），这里按图中字段讲
 ![数据字典配置](https://images.gitee.com/uploads/images/2021/0914/185321_4d8e2880_5384206.png "数据字典配置.png")
 
 ``` bash
-3. 在配置文件中追加mapper-locations配置，如下图：
+3. 在配置文件中追加mapper-locations配置【classpath*:mapper/*.xml】（多个配置以逗号分隔），如下图：
 ```
-![mapper-locations配置](https://images.gitee.com/uploads/images/2021/0914/185321_4d8e2880_5384206.png "mapper-locations配置.png")
-
-
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0915/112908_42261844_5384206.png "屏幕截图.png")
+![mapper-locations配置](https://images.gitee.com/uploads/images/2021/0915/112908_42261844_5384206.png "mapper-locations配置.png")
 
 ``` bash
 4. 标记要使用动态数据转换功能的数据模型，如下图：
