@@ -58,7 +58,7 @@ ps：图中字段都可自定义（详见步骤二），这里按图中字段讲
 ``` bash
 3. 在配置文件中追加mapper-locations配置【classpath*:mapper/*.xml】（多个配置以逗号分隔），如下图：
 ```
-![mapper-locations配置](https://images.gitee.com/uploads/images/2021/0915/112908_42261844_5384206.png "mapper-locations配置.png")
+![mapper-locations配置](https://images.gitee.com/uploads/images/2021/0915/113547_bb67813b_5384206.png "mapper-locations配置.png")
 
 ``` bash
 4. 标记要使用动态数据转换功能的数据模型，如下图：
