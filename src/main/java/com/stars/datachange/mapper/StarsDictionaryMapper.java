@@ -11,7 +11,7 @@ import java.util.Set;
  * @author zhouhao
  *
  */
-public interface DictionaryMapper {
+public interface StarsDictionaryMapper {
 
     /**
      * 查询数据字典

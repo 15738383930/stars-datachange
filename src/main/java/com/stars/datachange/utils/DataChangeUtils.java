@@ -5,7 +5,8 @@ import com.stars.datachange.annotation.ChangeModel;
 import com.stars.datachange.annotation.ChangeModelProperty;
 import com.stars.datachange.autoconfigure.StarsProperties;
 import com.stars.datachange.exception.ChangeModelException;
-import com.stars.datachange.mapper.DictionaryMapper;
+import com.stars.datachange.exception.ChangeModelPropertyException;
+import com.stars.datachange.mapper.StarsDictionaryMapper;
 import com.stars.datachange.model.response.DataChangeContrastResult;
 import com.stars.datachange.model.response.DataDictionaryResult;
 import lombok.Data;
@@ -16,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
 @Component
 public final class DataChangeUtils {
 
-    private static DictionaryMapper dictionaryMapper;
+    private static StarsDictionaryMapper starsDictionaryMapper;
 
-    public DataChangeUtils(DictionaryMapper dictionaryMapper){
-        DataChangeUtils.dictionaryMapper = dictionaryMapper;
+    public DataChangeUtils(StarsDictionaryMapper starsDictionaryMapper){
+        DataChangeUtils.starsDictionaryMapper = starsDictionaryMapper;
     }
 
     /**
@@ -145,9 +145,8 @@ public final class DataChangeUtils {
      * @return java.lang.String 转义后的多选值（逗号分割）
      * @author zhouhao
      * @since  2020/5/29 15:01
-     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data) throws Exception {
+    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data) {
         return splitConversion(modelCode, key, data, ",");
     }
 
@@ -158,9 +157,8 @@ public final class DataChangeUtils {
      * @return java.lang.String 转义后的多选值（逗号分割）
      * @author zhouhao
      * @since  2020/5/29 15:01
-     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data) throws Exception {
+    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data) {
         return splitConversion(result, key, data, ",");
     }
 
@@ -172,9 +170,8 @@ public final class DataChangeUtils {
      * @return java.lang.String 通过delimiter转义后的多选值
      * @author zhouhao
      * @since  2020/5/29 15:01
-     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data, String delimiter) throws Exception {
+    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data, String delimiter) {
         if(StringUtils.isEmpty(delimiter)){
             return splitConversion(modelCode, key, data);
         }
@@ -203,9 +200,8 @@ public final class DataChangeUtils {
      * @return java.lang.String 通过delimiter转义后的多选值
      * @author zhouhao
      * @since  2020/5/29 15:01
-     * @throws java.lang.Exception 异常
      */
-    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data, String delimiter) throws Exception {
+    private static String splitConversion(Set<DataDictionaryResult> result, String key, String data, String delimiter) {
         if(StringUtils.isEmpty(delimiter)){
             return splitConversion(result, key, data);
         }
@@ -234,10 +230,13 @@ public final class DataChangeUtils {
      * @return java.lang.Object 转义后的值
      * @author zhouhao
      * @since  2020/5/29 13:16
-     * @throws java.lang.Exception 异常
      */
-    private static Object getValue(Class<? extends  Enum> modelCode, String key, String value) throws Exception {
-        return modelCode.getMethod("getValue", String.class, String.class).invoke(modelCode, key, value);
+    private static Object getValue(Class<? extends  Enum> modelCode, String key, String value) {
+        try {
+            return modelCode.getMethod("getValue", String.class, String.class).invoke(modelCode, key, value);
+        } catch (Exception e) {
+            throw new ChangeModelPropertyException("Data conversion failed, please check your dictionary enumeration configuration!");
+        }
     }
 
     /**
@@ -389,12 +388,12 @@ public final class DataChangeUtils {
                     key = dataClass.getSimpleName().substring(0,1).toLowerCase().concat(dataClass.getSimpleName().substring(1));
                 }
                 try{
-                    process.setDictionaryResult(dictionaryMapper.findList(StarsProperties.dictionary, key));
+                    process.setDictionaryResult(starsDictionaryMapper.findList(StarsProperties.dictionary, key));
                 }catch (Exception e){
                     throw new ChangeModelException("Failed to bind data dictionary, please check configuration!");
                 }
                 if(CollectionUtils.isEmpty(process.getDictionaryResult())){
-                    throw new ChangeModelException("Please add some data to the data dictionary and try again!");
+                    throw new ChangeModelPropertyException("Please add some data to the data dictionary and try again!");
                 }
             }
 
