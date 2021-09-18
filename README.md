@@ -71,6 +71,13 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 ![数据转换](https://images.gitee.com/uploads/images/2021/0914/163139_e15ee7d8_5384206.png "数据转换.png")
 
 
+#### 两种使用方式区别
+
+1.  字典枚举：配置步骤少，定义的字典枚举可作为常量进行条件判断；字典值是静态的，不易维护
+![字典枚举作为常量](https://images.gitee.com/uploads/images/2021/0918/094747_7f1bccda_5384206.png "字典枚举作为常量.png")
+2.  数据字典：可以动态维护数据字典；配置步骤略多，需要字典进行条件判断时，需要定义常量
+
+
 #### 参与贡献
 
 1.  感谢 [SpringBootStarter](https://github.com/SpringBootStarter/) 提出的建设性见解
