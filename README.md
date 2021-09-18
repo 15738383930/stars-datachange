@@ -15,7 +15,7 @@
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 
@@ -24,7 +24,7 @@
 ``` bash
 1. 定义数据字典枚举，demo可在依赖包中找到，如下图：
 ```
-![数据字典枚举](https://images.gitee.com/uploads/images/2021/0914/162348_91a9b26a_5384206.png "数据字典枚举")
+![数据字典枚举](https://images.gitee.com/uploads/images/2021/0914/162348_91a9b26a_5384206.png "数据字典枚举.png")
 
 ``` bash
 2. 标记要使用数据转换功能的数据模型，如下图：
@@ -46,7 +46,6 @@ ps：图中字段都可自定义（详见步骤二），这里按图中字段讲
     1.1 code——对应属性的字典代码
     1.2 name——对应属性的字典值（也就是你要的结果）
     1.3 type——对应属性的名称（下图中，第一行数据是后几行数据的父级，用parent_id声明【parent_id、id等字段都可自定义】）
-    1.4 父字典的字段——type的值，对应数据模型中@ChangeModel的modelName的值（建议用数据模型的名称，首字母小写，（详见步骤三））
 ```
 ![字典表](https://images.gitee.com/uploads/images/2021/0914/185007_7dff798a_5384206.png "字典表.png")
 
@@ -56,16 +55,30 @@ ps：图中字段都可自定义（详见步骤二），这里按图中字段讲
 ![数据字典配置](https://images.gitee.com/uploads/images/2021/0914/185321_4d8e2880_5384206.png "数据字典配置.png")
 
 ``` bash
-3. 标记要使用动态数据转换功能的数据模型，如下图：
-ps： 需要切换到DB源模式，modelName——数据模型名称（值默认为首字母小写的数据模型名称），对应字典表中父字典的列——type的值
+3. 在配置文件中追加mapper-locations配置【classpath*:mapper/*.xml】（多个配置以逗号分隔），如下图：
 ```
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0914/185916_02e7d732_5384206.png "屏幕截图.png")
+![mapper-locations配置](https://images.gitee.com/uploads/images/2021/0915/113547_bb67813b_5384206.png "mapper-locations配置.png")
 
 ``` bash
-4. 执行
+4. 标记要使用动态数据转换功能的数据模型，如下图：
+ps： 需要切换到DB源模式，modelName——数据模型名称（值默认为首字母小写的数据模型名称），对应字典表中父字典的列——type的值（建议用数据模型的名称，首字母小写）
 ```
-![数据转换](https://images.gitee.com/uploads/images/2021/0914/163139_e15ee7d8_5384206.png "屏幕截图.png")
+![标记数据模型](https://images.gitee.com/uploads/images/2021/0914/185916_02e7d732_5384206.png "标记数据模型.png")
 
+``` bash
+5. 执行
+```
+![数据转换](https://images.gitee.com/uploads/images/2021/0914/163139_e15ee7d8_5384206.png "数据转换.png")
+
+
+#### 两种使用方式区别
+``` bash
+1.  字典枚举：配置步骤少，定义的字典枚举可作为常量进行条件判断；字典值是静态的，不易维护
+```
+![字典枚举作为常量](https://images.gitee.com/uploads/images/2021/0918/094747_7f1bccda_5384206.png "字典枚举作为常量.png")
+``` bash
+2.  数据字典：可以动态维护数据字典；配置步骤略多，需要字典进行条件判断时，需要定义常量
+```
 
 #### 参与贡献
 
