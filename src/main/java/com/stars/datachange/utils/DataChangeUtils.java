@@ -439,7 +439,7 @@ public final class DataChangeUtils {
                 String chinese = StringUtils.isNotEmpty(anon.value()) ? anon.value() : anon.chinese();
                 if(StringUtils.isNotEmpty(chinese)){
                     String delimiter = anon.chineseIgnoreDelimiter();
-                    process.getChineseEnglish().put(name, StringUtils.isEmpty(delimiter) ? anon.value(): anon.value().split(delimiter)[0]);
+                    process.getChineseEnglish().put(name, StringUtils.isEmpty(delimiter) ? chinese : chinese.split(delimiter)[0]);
                 }else{
                     process.getChineseEnglish().put(name, name);
                 }
