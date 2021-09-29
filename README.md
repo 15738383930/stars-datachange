@@ -29,7 +29,7 @@
 ``` bash
 2. 标记要使用数据转换功能的数据模型，如下图：
 ```
-![数据模型](https://images.gitee.com/uploads/images/2021/0914/162728_692d2d18_5384206.png "数据模型.png")
+![数据模型](https://images.gitee.com/uploads/images/2021/0929/162008_fe6f6e6b_5384206.png "数据模型.png")
 
 ``` bash
 3. 执行
@@ -63,7 +63,7 @@ ps：图中字段都可自定义（详见步骤二），这里按图中字段讲
 4. 标记要使用动态数据转换功能的数据模型，如下图：
 ps： 需要切换到DB源模式，modelName——数据模型名称（值默认为首字母小写的数据模型名称），对应字典表中父字典的列——type的值（建议用数据模型的名称，首字母小写）
 ```
-![标记数据模型](https://images.gitee.com/uploads/images/2021/0914/185916_02e7d732_5384206.png "标记数据模型.png")
+![标记数据模型](https://images.gitee.com/uploads/images/2021/0929/161824_deed0579_5384206.png "标记数据模型.png")
 
 ``` bash
 5. 执行
