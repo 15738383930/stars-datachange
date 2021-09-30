@@ -19,6 +19,9 @@
 </dependency>
 ```
 
+#### Demo Project
+[Demo project url](https://gitee.com/xuan_zheng/data-change)
+
 #### 使用说明（方式一：数据字典枚举）
 
 ``` bash
