@@ -74,7 +74,12 @@ public final class DataChangeUtils {
 
             // 位运算
             if(process.isBitOperation(key)){
-                result.put(key, bitOperation(Integer.parseInt(result.get(key).toString())));
+                if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
+                    result.put(key, splitConversion(process.getModelCode(), key, bitOperation(Integer.parseInt(result.get(key).toString())), process.getSplitDelimiter().get(key)));
+                }
+                if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
+                    result.put(key, splitConversion(process.getDictionaryResult(), key, bitOperation(Integer.parseInt(result.get(key).toString())), process.getSplitDelimiter().get(key)));
+                }
             }
 
             // 分割转换
@@ -176,8 +181,7 @@ public final class DataChangeUtils {
             return splitConversion(modelCode, key, data);
         }
         if (StringUtils.isNotEmpty(data)) {
-            String delimiter_ = delimiter.replace(".", "\\.");
-            delimiter_ = delimiter_.replace("|", "\\|");
+            String delimiter_ = delimiter.replace(".", "\\.").replace("|", "\\|");
             List<String> list = Arrays.asList(data.split(delimiter_));
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {

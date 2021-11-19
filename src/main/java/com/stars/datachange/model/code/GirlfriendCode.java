@@ -25,6 +25,13 @@ public enum GirlfriendCode {
     FAVORITE_FOOD_4("favoriteFood", "4", "黄瓜"),
     FAVORITE_FOOD_5("favoriteFood", "5", "火锅"),
 
+    /**
+     * 旅游地
+     */
+    TOURIST_PLACE_2("touristPlace", "2", "夏威夷"),
+    TOURIST_PLACE_4("touristPlace", "4", "摩洛哥"),
+    TOURIST_PLACE_8("touristPlace", "8", "马尔代夫"),
+
     ;
 
     private final String t;

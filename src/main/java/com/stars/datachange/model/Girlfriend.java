@@ -16,7 +16,7 @@ import java.util.List;
  * @since 2021/9/9 11:46
  */
 @Data
-@ChangeModel(source = ChangeModel.Source.DB)
+@ChangeModel(GirlfriendCode.class)
 public class Girlfriend {
 
     @ChangeModelProperty(value = "姓名", skipComparison = true)
@@ -40,5 +40,8 @@ public class Girlfriend {
 
     @ChangeModelProperty(value = "照片", ignore = true)
     private List<String> photo;
+
+    @ChangeModelProperty(value = "旅游地： 2-夏威夷 4-摩洛哥 8-马尔代夫", bitOperation = true)
+    private Integer touristPlace;
 
 }
