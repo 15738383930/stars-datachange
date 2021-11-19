@@ -72,7 +72,7 @@ public final class DataChangeUtils {
                 continue;
             }
 
-            // 位运算
+            // 位运算转换
             if(process.isBitOperation(key)){
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
                     result.put(key, splitConversion(process.getModelCode(), key, bitOperation(Integer.parseInt(result.get(key).toString())), process.getSplitDelimiter().get(key)));
@@ -80,6 +80,7 @@ public final class DataChangeUtils {
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
                     result.put(key, splitConversion(process.getDictionaryResult(), key, bitOperation(Integer.parseInt(result.get(key).toString())), process.getSplitDelimiter().get(key)));
                 }
+                continue;
             }
 
             // 分割转换
@@ -90,17 +91,15 @@ public final class DataChangeUtils {
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
                     result.put(key, splitConversion(process.getDictionaryResult(), key, result.get(key).toString(), process.getSplitDelimiter().get(key)));
                 }
+                continue;
             }
 
             // 转换
-            if(!process.isSplit(key)){
-                if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    result.put(key, getValue(process.getModelCode(), key, result.get(key).toString()));
-                }
-                if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    result.put(key, getValue(process.getDictionaryResult(), key, result.get(key).toString()));
-                }
+            if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
+                result.put(key, getValue(process.getModelCode(), key, result.get(key).toString()));
+                continue;
             }
+            result.put(key, getValue(process.getDictionaryResult(), key, result.get(key).toString()));
         }
         return result;
     }
@@ -470,7 +469,7 @@ public final class DataChangeUtils {
         }
 
         /**
-         * 是否跳过数据拆分
+         * 是否进行数据拆分
          * @param field 字段名
          * @return boolean
          * @author zhouhao
