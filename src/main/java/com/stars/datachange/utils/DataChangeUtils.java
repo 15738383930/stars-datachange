@@ -150,7 +150,7 @@ public final class DataChangeUtils {
      * @author zhouhao
      * @since  2020/5/29 15:01
      */
-    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data) {
+    private static String splitConversion(Class<? extends Enum> modelCode, String key, String data) {
         return splitConversion(modelCode, key, data, ",");
     }
 
@@ -175,7 +175,7 @@ public final class DataChangeUtils {
      * @author zhouhao
      * @since  2020/5/29 15:01
      */
-    private static String splitConversion(Class<? extends  Enum> modelCode, String key, String data, String delimiter) {
+    private static String splitConversion(Class<? extends Enum> modelCode, String key, String data, String delimiter) {
         if(StringUtils.isEmpty(delimiter)){
             return splitConversion(modelCode, key, data);
         }
@@ -234,7 +234,7 @@ public final class DataChangeUtils {
      * @author zhouhao
      * @since  2020/5/29 13:16
      */
-    private static Object getValue(Class<? extends  Enum> modelCode, String key, String value) {
+    private static Object getValue(Class<? extends Enum> modelCode, String key, String value) {
         try {
             return modelCode.getMethod("getValue", String.class, String.class).invoke(modelCode, key, value);
         } catch (Exception e) {
@@ -272,8 +272,8 @@ public final class DataChangeUtils {
      *      <br>遍历结束后，按照多选值的大小进行排序并以逗号分隔的形式返回
      * @param num 位数值
      * @return java.lang.String 运算后的多选值（逗号分隔）
-     * @Author zhouhao
-     * @Date  2020/5/28 19:58
+     * @author zhouhao
+     * @date  2020/5/28 19:58
      */
     private static String bitOperation(int num){
         String data = new StringBuffer(Integer.toBinaryString(num)).reverse().toString();
