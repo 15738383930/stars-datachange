@@ -75,10 +75,10 @@ public final class DataChangeUtils {
             // 位运算转换
             if(process.isBitOperation(key)){
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    result.put(key, splitConversion(process.getModelCode(), key, bitOperation(Integer.parseInt(result.get(key).toString())), process.getSplitDelimiter().get(key)));
+                    result.put(key, splitConversion(process.getModelCode(), key, bitOperation(Integer.parseInt(result.get(key).toString()))));
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    result.put(key, splitConversion(process.getDictionaryResult(), key, bitOperation(Integer.parseInt(result.get(key).toString())), process.getSplitDelimiter().get(key)));
+                    result.put(key, splitConversion(process.getDictionaryResult(), key, bitOperation(Integer.parseInt(result.get(key).toString()))));
                 }
                 continue;
             }
