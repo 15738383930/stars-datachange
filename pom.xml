@@ -12,7 +12,7 @@
     <artifactId>stars-datachange</artifactId>
     <version>1.1.0</version>
     <name>stars-datachange</name>
-    <description>**开源数据转换工具，强大的可插拔、非侵入式设计，两种数据源转换结构，可以优雅的使你的数据字典转换为你想要的结果。</description>
+    <description>**开源数据对比、转换工具，强大的可插拔、非侵入式设计，两种数据源转换结构，可优雅的进行数据字典转换、对比。</description>
     <url>https://gitee.com/xuan_zheng/stars-datachange</url>
 
     <properties>
