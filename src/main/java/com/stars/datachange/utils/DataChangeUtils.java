@@ -1,6 +1,5 @@
 package com.stars.datachange.utils;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.stars.datachange.annotation.ChangeModel;
 import com.stars.datachange.annotation.ChangeModelProperty;
 import com.stars.datachange.autoconfigure.StarsProperties;
@@ -9,13 +8,13 @@ import com.stars.datachange.exception.ChangeModelPropertyException;
 import com.stars.datachange.mapper.StarsDictionaryMapper;
 import com.stars.datachange.model.response.DataChangeContrastResult;
 import com.stars.datachange.model.response.DataDictionaryResult;
+import com.stars.datachange.module.Compatible;
+import com.stars.datachange.module.DefaultCompatible;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,8 +29,11 @@ public final class DataChangeUtils {
 
     private static StarsDictionaryMapper starsDictionaryMapper;
 
-    public DataChangeUtils(StarsDictionaryMapper starsDictionaryMapper){
+    private static Compatible compatible;
+
+    public DataChangeUtils(StarsDictionaryMapper starsDictionaryMapper, Compatible compatible){
         DataChangeUtils.starsDictionaryMapper = starsDictionaryMapper;
+        DataChangeUtils.compatible = compatible;
     }
 
     /**
@@ -57,7 +59,10 @@ public final class DataChangeUtils {
             return new HashMap<>();
         }
 
-        Compatible.run(dataClass, result);
+        if (Objects.isNull(compatible)) {
+            compatible = DefaultCompatible.get();
+        }
+        compatible.run(dataClass, result);
 
         if(Objects.isNull(process)){
             process = Process.create(dataClass, new Process());
@@ -329,26 +334,26 @@ public final class DataChangeUtils {
         /**
          * 英转中时，中文要忽略文本部分的分割符<br>
          *      例：<br><br>
-         *      {@code @ChangeModelProperty(value = "双休日服务时间： 1-周六 2-周日", chineseIgnoreDelimiter = "：")  } <br>
-         *      {@code private String wsh;     } <br><br>
-         *      {@code @ChangeModelProperty(value = "顾问点类型 1-街镇级 2-居村级 3-专业机构级", chineseIgnoreDelimiter = " ")  } <br>
-         *      {@code private Integer type;     } <br><br>
+         *      {@code @ChangeModelProperty(value = "女朋友类型：1-安静 2-火辣 3-清爽", chineseIgnoreDelimiter = "：")  } <br>
+         *      {@code private String type1;     } <br><br>
+         *      {@code @ChangeModelProperty(value = "女朋友类型 1-安静 2-火辣 3-清爽", chineseIgnoreDelimiter = " ")  } <br>
+         *      {@code private Integer type2;     } <br><br>
          *      解释：<br>
-         *      wsh属性忽略第一个“：”后的文本，结果为【双休日服务时间】（“：”为默认分割符，可不写） <br>
-         *      type属性忽略第一个“ ”后的文本，结果为【顾问点类型】 <br>
+         *      type1属性忽略第一个“：”后的文本，结果为【女朋友类型】（“：”为默认分割符，可不写） <br>
+         *      type2属性忽略第一个“ ”后的文本，结果为【女朋友类型】 <br>
          */
         private Map<String, String> chineseIgnoreDelimiter = new HashMap<>();
 
         /**
          * 数据拆分时，指定的分割符<br>
          *     例：<br><br>
-         *      {@code @ChangeModelProperty(value = "双休日服务时间： 1-周六 2-周日", split = true, delimiter = ",")  } <br>
-         *      {@code private String wsh;     } <br><br>
-         *      {@code @ChangeModelProperty(value = "顾问点类型 1-街镇级 2-居村级 3-专业机构级", split = true, delimiter = "|")  } <br>
-         *      {@code private Integer type;     } <br><br>
+         *      {@code @ChangeModelProperty(value = "女朋友类型： 1-安静 2-火辣 3-清爽", split = true, delimiter = ",")  } <br>
+         *      {@code private String type1;     } <br><br>
+         *      {@code @ChangeModelProperty(value = "女朋友类型： 1-安静 2-火辣 3-清爽", split = true, delimiter = "|")  } <br>
+         *      {@code private Integer type2;     } <br><br>
          *      解释：<br>
-         *      wsh属性的多选值以“,”分割，结果为【周六、周日】（“,”为默认分割符，可不写） <br>
-         *      type属性的多选值以“|”分割，结果为【街镇级|居村级|专业机构级】 <br><br>
+         *      type1属性的多选值以“,”分割，结果为【安静,火辣,清爽】（“,”为默认分割符，可不写） <br>
+         *      type2属性的多选值以“|”分割，结果为【安静|火辣|清爽】 <br><br>
          *      PS：split为true的前提下，delimiter的配置才生效
          */
         private Map<String, String> splitDelimiter = new HashMap<>();
@@ -447,7 +452,7 @@ public final class DataChangeUtils {
                     process.getChineseEnglish().put(name, name);
                 }
             }
-            if(Objects.nonNull(dataClass.getSuperclass()) && !dataClass.getSuperclass().equals(Object.class)){
+            if(!dataClass.getSuperclass().equals(Object.class)){
                 create(dataClass.getSuperclass(), process);
             }
             return process;
@@ -511,70 +516,6 @@ public final class DataChangeUtils {
                 return false;
             }
             return fields.contains(field);
-        }
-    }
-
-    /**
-     * 数据转换兼容模型
-     * @author zhouhao
-     * @since  2021/9/6 17:05
-     */
-    @SuppressWarnings("all")
-    private static class Compatible {
-
-        /**
-         * 运行兼容模型
-         * @param dataClass 数据模型
-         * @param result 数据转换结果集
-         * @param annotations 要兼容的注解（默认实现现有兼容的所有注解）
-         * @author zhouhao
-         * @since  2021/9/7 9:55
-         */
-        public static void run(Class<?> dataClass, Map<String, Object> result, Class<? extends Annotation>... annotations){
-            List<Class<?>> list = new ArrayList<>();
-            if(Objects.nonNull(annotations)){
-                list.addAll(Arrays.asList(annotations));
-            }
-            Field[] fields = dataClass.getDeclaredFields();
-            for(Field field : fields){
-                if(!field.isAccessible()){
-                    field.setAccessible(true);
-                }
-
-                if(CollectionUtils.isEmpty(list) || list.contains(JsonFormat.class)){
-                    jsonFormat(field, result);
-                }
-
-               // 这里加入其它注解的兼容
-                /*if(CollectionUtils.isEmpty(list) || list.contains(...)){
-                    // ...
-                }*/
-
-            }
-            if(Objects.nonNull(dataClass.getSuperclass())){
-                run(dataClass.getSuperclass(), result);
-            }
-        }
-
-        /**
-         * 兼容{@link JsonFormat}
-         * @param field 字段
-         * @param result 数据转换结果集
-         * @author zhouhao
-         * @since  2021/9/7 10:15
-         */
-        private static void jsonFormat(Field field, Map<String, Object> result){
-            if (!field.isAnnotationPresent(JsonFormat.class)) {
-                return;
-            }
-
-            JsonFormat anon = field.getAnnotation(JsonFormat.class);
-
-            String name = field.getName();
-            if(Objects.isNull(result.get(name))){
-                return;
-            }
-            result.put(name, DateFormatUtils.format((Date) result.get(name), anon.pattern(), TimeZone.getTimeZone(anon.timezone())));
         }
     }
 }
