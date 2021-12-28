@@ -214,8 +214,7 @@ public final class DataChangeUtils {
             return splitConversion(result, key, data);
         }
         if (StringUtils.isNotEmpty(data)) {
-            String delimiter_ = delimiter.replace(".", "\\.");
-            delimiter_ = delimiter_.replace("|", "\\|");
+            String delimiter_ = delimiter.replace(".", "\\.").replace("|", "\\|");
             List<String> list = Arrays.asList(data.split(delimiter_));
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
