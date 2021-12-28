@@ -1,6 +1,7 @@
 package com.stars.datachange.module;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -20,5 +21,5 @@ public interface Compatible {
      * @author zhouhao
      * @since  2021/9/7 9:55
      */
-    void run(Class<?> dataClass, Map<String, Object> result, Class<? extends Annotation>... annotations);
+    void run(Class<?> dataClass, Map<String, Object> result, Collection<Class<? extends Annotation>> annotations);
 }

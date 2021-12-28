@@ -50,13 +50,23 @@ public @interface ChangeModel {
 
     /**
      * Data model name<p>
-     *     It takes effect when {@link ChangeModel#source} is set to {@code Source.DB}.
+     *     It takes effect when {@link ChangeModel#source} is set to {@code Source.DB}.<p>
      *     The default is the class name under {@link ChangeModel} (naming convention: camel case, lowercase first letter)
      * @return String
      * @author zhouhao
      * @since  2021/9/13 14:06
      */
     String modelName() default "";
+
+    /**
+     * compatible Annotations<p>
+     *     When data is converted, compatible annotations are required on the attributes<p>
+     *     Scan all annotations of attributes in the model by default
+     * @return Class
+     * @author zhouhao
+     * @since 2021/12/28 9:10
+     */
+    Class<? extends Annotation>[] compatible() default {};
 
     /**
      * 数据转换来源

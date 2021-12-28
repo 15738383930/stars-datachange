@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ public final class DataChangeUtils {
      * @throws java.lang.Exception 异常
      */
     public static Map<String, Object> dataChange(Object data) throws Exception {
-        return dataChange(data, null);
+        return dataChange(data, Process.create(data.getClass(), new Process()));
     }
 
     private static Map<String, Object> dataChange(Object data, Process process) throws Exception {
@@ -62,11 +63,7 @@ public final class DataChangeUtils {
         if (Objects.isNull(compatible)) {
             compatible = DefaultCompatible.get();
         }
-        compatible.run(dataClass, result);
-
-        if(Objects.isNull(process)){
-            process = Process.create(dataClass, new Process());
-        }
+        compatible.run(dataClass, result, process.getCompatible());
 
         for (String key : result.keySet()) {
             if(Objects.isNull(result.get(key))){
@@ -307,6 +304,9 @@ public final class DataChangeUtils {
         /** 数据代码模型 */
         private Class<? extends Enum> modelCode;
 
+        /** 兼容注解 */
+        private Set<Class<? extends Annotation>> compatible = new HashSet<>();
+
         /** 数据字典 */
         private Set<DataDictionaryResult> dictionaryResult;
 
@@ -390,10 +390,9 @@ public final class DataChangeUtils {
             // 数据转换来源：数据字典
             if(process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
                 // 数据模型名称
-                String key = process.getChangeModel().modelName();
-                if(StringUtils.isEmpty(key)){
-                    key = dataClass.getSimpleName().substring(0,1).toLowerCase().concat(dataClass.getSimpleName().substring(1));
-                }
+                String key = StringUtils.isEmpty(process.getChangeModel().modelName())
+                        ? dataClass.getSimpleName().substring(0,1).toLowerCase().concat(dataClass.getSimpleName().substring(1))
+                        : process.getChangeModel().modelName();
                 try{
                     process.setDictionaryResult(starsDictionaryMapper.findList(StarsProperties.dictionary, key));
                 }catch (Exception e){
@@ -405,9 +404,19 @@ public final class DataChangeUtils {
             }
 
             Field[] fields = dataClass.getDeclaredFields();
+            // 需要兼容的注解
+            Set<Class<? extends Annotation>> compatible = new HashSet<>();
             for(Field field : fields){
                 if(!field.isAccessible()){
                     field.setAccessible(true);
+                }
+
+                // 默认扫描数据模型下所有属性的注解
+                if(process.getChangeModel().compatible().length == 0) {
+                    compatible.addAll(Arrays.stream(field.getDeclaredAnnotations())
+                            .filter(o -> !o.annotationType().getName().equals(ChangeModelProperty.class.getName()))
+                            .map(Annotation::annotationType)
+                            .collect(Collectors.toSet()));
                 }
 
                 if (process.getChangeModel().quick() && !field.isAnnotationPresent(ChangeModelProperty.class)) {
@@ -451,6 +460,15 @@ public final class DataChangeUtils {
                     process.getChineseEnglish().put(name, name);
                 }
             }
+            // 需要兼容的注解
+            if(process.getChangeModel().compatible().length == 0) {
+                process.setCompatible(compatible);
+            }else{
+                process.setCompatible(new HashSet<>(Arrays.stream(process.getChangeModel().compatible())
+                                .filter(o -> !o.getName().equals(ChangeModelProperty.class.getName()))
+                                .collect(Collectors.toSet())));
+            }
+
             if(!dataClass.getSuperclass().equals(Object.class)){
                 create(dataClass.getSuperclass(), process);
             }
