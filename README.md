@@ -97,3 +97,4 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 
 - v1.0.x：完成了基本数据转换、数据对比等功能；
 - v1.1.0：添加了自定义注解兼容模块(详见：[DataChangeCompatibleConfig.java](https://gitee.com/xuan_zheng/data-change))；
+- v1.1.1：注解兼容模块优化；
