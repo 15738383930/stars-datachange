@@ -366,7 +366,7 @@ public final class DataChangeUtils {
          * 创建数据转换处理模型
          * @param dataClass 数据模型
          * @param process 数据转换处理模型
-         * @return com.ucan.shweilao.utils.DataChangeUtils.Process
+         * @return DataChangeUtils.Process
          * @author zhouhao
          * @since  2021/9/7 9:55
          */
