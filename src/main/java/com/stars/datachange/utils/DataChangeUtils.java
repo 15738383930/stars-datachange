@@ -258,10 +258,7 @@ public final class DataChangeUtils {
             return code;
         }
         List<DataDictionaryResult.Map> maps = collect.get(0).getMaps().stream().filter(o -> o.getCode().equals(code)).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(maps)){
-            return code;
-        }
-        return maps.get(0).getValue();
+        return CollectionUtils.isEmpty(maps) ? code : maps.get(0).getValue();
     }
 
     /**
