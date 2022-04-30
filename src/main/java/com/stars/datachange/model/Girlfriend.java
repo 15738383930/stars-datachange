@@ -22,7 +22,7 @@ public class Girlfriend {
     @ChangeModelProperty(value = "姓名", skipComparison = true)
     private String name;
 
-    @ChangeModelProperty("类型： 1-安静 2-火辣 3-清爽")
+    @ChangeModelProperty(value = "类型： 1-安静 2-火辣 3-清爽", mapping = "typeText")
     private Integer type;
 
     @ChangeModelProperty("交往时间")
@@ -43,5 +43,7 @@ public class Girlfriend {
 
     @ChangeModelProperty(value = "旅游地： 2-夏威夷 4-摩洛哥 8-马尔代夫", bitOperation = true)
     private Integer touristPlace;
+
+    private Integer typeText;
 
 }

@@ -72,7 +72,7 @@ public @interface ChangeModelProperty {
 
     /**
      * Need ignore data change<p>
-     *      When true, the corresponding attribute will not be processed for data change
+     *      When true, the corresponding property will not be processed for data change
      * @return boolean
      * @author zhouhao
      * @since  2021/9/13 14:06
@@ -80,10 +80,19 @@ public @interface ChangeModelProperty {
     boolean ignore() default false;
 
     /**
-     * Skip the comparison of new and old data for this attribute<br>
+     * Skip the comparison of new and old data for this property<br>
      * @return boolean
      * @author zhouhao
      * @since  2021/9/13 14:06
      */
     boolean skipComparison() default false;
+
+    /**
+     * Attribute of data conversion result mapping<p>
+     *     PS: Mapped property type must be {@link String}
+     * @return String
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     */
+    String mapping() default "";
 }

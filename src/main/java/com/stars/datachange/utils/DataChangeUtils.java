@@ -28,6 +28,9 @@ import java.util.stream.Collectors;
 @Component
 public final class DataChangeUtils {
 
+    /** 默认映射属性的后缀 */
+    private static final String[] MAPPING_SUFFIX = {"Text", "Str", "Ext"};
+
     private static StarsDictionaryMapper starsDictionaryMapper;
 
     private static Compatible compatible;
@@ -50,6 +53,20 @@ public final class DataChangeUtils {
      */
     public static Map<String, Object> dataChange(Object data) throws Exception {
         return dataChange(data, Process.create(data.getClass(), new Process()));
+    }
+
+    /**
+     * 数据转换（转换到原对象）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     * @throws java.lang.Exception 异常
+     */
+    public static <T> void dataChangeToBean(T data) throws Exception {
+        dataChangeToBean(data, Process.create(data.getClass(), new Process()));
     }
 
     private static Map<String, Object> dataChange(Object data, Process process) throws Exception {
@@ -104,6 +121,62 @@ public final class DataChangeUtils {
             result.put(key, getValue(process.getDictionaryResult(), key, result.get(key).toString()));
         }
         return result;
+    }
+
+    private static <T> void dataChangeToBean(T data, Process process) throws Exception {
+        final Class<?> dataClass = data.getClass();
+
+        final List<Field> fields = getFields(dataClass, new ArrayList<>());
+        for(Field field : fields){
+            if(!field.isAccessible()){
+                field.setAccessible(true);
+            }
+
+            String name = field.getName();
+            Object value = field.get(data);
+
+            if(Objects.isNull(value)){
+                continue;
+            }
+
+            if(process.isIgnore(name)){
+                continue;
+            }
+
+            // 映射后的字段
+            Field mappedField = getMappedField(process, dataClass, field);
+            if (Objects.isNull(mappedField)) continue;
+
+            // 位运算转换
+            if(process.isBitOperation(name)){
+                if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
+                    mappedField.set(data, splitConversion(process.getModelCode(), name, bitOperation((Integer) value)));
+                }
+                if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
+                    mappedField.set(data, splitConversion(process.getDictionaryResult(), name, bitOperation((Integer) value)));
+                }
+                continue;
+            }
+
+            // 分割转换
+            if(process.isSplit(name)){
+                if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
+                    mappedField.set(data, splitConversion(process.getModelCode(), name, value.toString(), process.getSplitDelimiter().get(name)));
+                }
+                if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
+                    mappedField.set(data, splitConversion(process.getDictionaryResult(), name, value.toString(), process.getSplitDelimiter().get(name)));
+                }
+                continue;
+            }
+
+            // 转换
+            if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
+                mappedField.set(data, getValue(process.getModelCode(), name, value.toString()));
+                continue;
+            }
+
+            mappedField.set(data, getValue(process.getDictionaryResult(), name, value.toString()));
+        }
     }
 
     /**
@@ -288,6 +361,91 @@ public final class DataChangeUtils {
     }
 
     /**
+     * 得到映射后的字段
+     * @author Hao.
+     * @date 2022/4/30 11:50
+     * @param process 数据转换处理模型
+     * @param dataClass 数据模型
+     * @param field 原字段
+     * @return java.lang.reflect.Field
+     */
+    private static Field getMappedField(Process process, Class<?> dataClass, Field field) {
+        // 原始字段名
+        final String name = field.getName();
+
+        // 映射的字段名
+        String mappingName = process.getMapping().get(name);
+
+        // 映射后的字段名
+        String mappedName;
+
+        // 映射后的字段
+        Field mappedField = null;
+
+        if (StringUtils.isEmpty(mappingName)) {
+            // 智能的匹配以Text、Str、Ext结尾的字段
+            for (String suffix : MAPPING_SUFFIX) {
+                try {
+                    mappedField = dataClass.getDeclaredField(name + suffix);
+                    break;
+                } catch (NoSuchFieldException ignored) {
+                }
+            }
+
+            if(Objects.isNull(mappedField)){
+                if(!dataClass.getSuperclass().equals(Object.class) && dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
+                    mappedField = getMappedField(process, dataClass.getSuperclass(), field);
+                }
+            }
+            if(Objects.isNull(mappedField)){
+                if(!field.getType().equals(String.class)){
+                    return null;
+                }
+            }
+            mappedName = name;
+        }else{
+            mappedName = mappingName;
+        }
+
+        if(Objects.isNull(mappedField)){
+            try{
+                mappedField = dataClass.getDeclaredField(mappedName);
+            }catch (NoSuchFieldException e) {
+                if(dataClass.getSuperclass().equals(Object.class) || !dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
+                    throw new ChangeModelPropertyException(String.format("Mapped property not found [%s] !", mappingName));
+                }
+                mappedField = getMappedField(process, dataClass.getSuperclass(), field);
+            }
+        }
+
+        if(!mappedField.getType().equals(String.class)){
+            throw new ChangeModelPropertyException(String.format("The mapped property must be of type java.lang.String [%s] !", mappingName));
+        }
+
+        if(!mappedField.isAccessible()){
+            mappedField.setAccessible(true);
+        }
+        return mappedField;
+    }
+
+    /**
+     * 得到字段列表
+     * @author Hao.
+     * @date 2022/4/30 11:50
+     * @param dataClass 数据模型
+     * @param list 字段列表
+     * @return java.lang.reflect.Field
+     */
+    private static List<Field> getFields(Class<?> dataClass, List<Field> list) {
+        list.addAll(new ArrayList<>(Arrays.asList(dataClass.getDeclaredFields())));
+        // 若父类是通用的，可跳过处理阶段
+        if(!dataClass.getSuperclass().equals(Object.class) && dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
+            getFields(dataClass.getSuperclass(), list);
+        }
+        return list;
+    }
+
+    /**
      * 数据转换处理模型
      * @author zhouhao
      * @since  2021/9/6 17:05
@@ -358,6 +516,13 @@ public final class DataChangeUtils {
          * 中英对照集
          */
         private Map<String, String> chineseEnglish = new HashMap<>();
+
+        /**
+         * 映射的字段
+         * key-字典值的字段
+         * value-数据转换后的字段
+         */
+        private Map<String, String> mapping = new HashMap<>();
 
         /**
          * 创建数据转换处理模型
@@ -455,6 +620,10 @@ public final class DataChangeUtils {
                     process.getChineseEnglish().put(name, StringUtils.isEmpty(delimiter) ? chinese : chinese.split(delimiter)[0]);
                 }else{
                     process.getChineseEnglish().put(name, name);
+                }
+
+                if(StringUtils.isNotEmpty(anon.mapping())){
+                    process.getMapping().put(name, anon.mapping());
                 }
             }
             // 需要兼容的注解
