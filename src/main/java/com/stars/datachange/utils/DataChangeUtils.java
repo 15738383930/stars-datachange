@@ -466,7 +466,8 @@ public final class DataChangeUtils {
                                 .collect(Collectors.toSet())));
             }
 
-            if(!dataClass.getSuperclass().equals(Object.class)){
+            // 若父类是通用的，可跳过处理阶段
+            if(!dataClass.getSuperclass().equals(Object.class) && dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
                 create(dataClass.getSuperclass(), process);
             }
             return process;
