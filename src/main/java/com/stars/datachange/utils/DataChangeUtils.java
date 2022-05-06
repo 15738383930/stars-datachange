@@ -412,14 +412,14 @@ public final class DataChangeUtils {
                 mappedField = dataClass.getDeclaredField(mappedName);
             }catch (NoSuchFieldException e) {
                 if(dataClass.getSuperclass().equals(Object.class) || !dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
-                    throw new ChangeModelPropertyException(String.format("Mapped property not found [%s] !", mappingName));
+                    throw new ChangeModelPropertyException(String.format("Property mapping not found [%s] !", mappedName));
                 }
                 mappedField = getMappedField(process, dataClass.getSuperclass(), field);
             }
         }
 
         if(!mappedField.getType().equals(String.class)){
-            throw new ChangeModelPropertyException(String.format("The mapped property must be of type java.lang.String [%s] !", mappingName));
+            throw new ChangeModelPropertyException(String.format("The mapped property must be of type java.lang.String [%s] !", mappedField.getName()));
         }
 
         if(!mappedField.isAccessible()){
