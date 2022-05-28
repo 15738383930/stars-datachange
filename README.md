@@ -95,7 +95,7 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 
 #### 版本更新说明
 
-- v1.3.0：[v1.3.0新特性](https://blog.csdn.net/qq_36206259/article/details/124515865?spm=1001.2014.3001.5501)
+- v1.3.0：[v1.3.0新特性](https://blog.csdn.net/qq_36206259/article/details/125021976?spm=1001.2014.3001.5501)
 
     优化了代码结构；
 
