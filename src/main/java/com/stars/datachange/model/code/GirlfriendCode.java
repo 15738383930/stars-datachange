@@ -1,13 +1,11 @@
 package com.stars.datachange.model.code;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * 女朋友字典枚举
  * @author zhouhao
  * @since  2021/7/27 10:35
  */
-public enum GirlfriendCode {
+public enum GirlfriendCode implements BaseCode {
 
     /**
      * 类型
@@ -44,27 +42,18 @@ public enum GirlfriendCode {
         this.v = v;
     }
 
-    public String getT() {
+    @Override
+    public String t() {
         return t;
     }
 
-    public String getK() {
+    @Override
+    public String k() {
         return k;
     }
 
-    public String getV() {
+    @Override
+    public String v() {
         return v;
-    }
-
-    public static String getValue(String t, String k) {
-        if (StringUtils.isNotEmpty(k)) {
-            GirlfriendCode[] values = GirlfriendCode.values();
-            for (GirlfriendCode code : values) {
-                if (code.getT().equals(t) && code.getK().equals(k)) {
-                    return code.getV();
-                }
-            }
-        }
-        return k;
     }
 }

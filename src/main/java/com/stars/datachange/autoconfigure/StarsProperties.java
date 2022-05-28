@@ -14,8 +14,11 @@ public final class StarsProperties {
 
     public static Dictionary dictionary;
 
-    public StarsProperties(Dictionary dictionary){
+    public static Config config;
+
+    public StarsProperties(Dictionary dictionary, Config config){
         StarsProperties.dictionary = dictionary;
+        StarsProperties.config = config;
     }
 
     @Data
@@ -26,19 +29,28 @@ public final class StarsProperties {
         /** 字典表的表名 */
         private String tableName = "sys_dictionary";
 
-        /** 列-字段名称 */
+        /** 属性名称对应的列名 */
         private String fieldName = "name";
 
-        /** 列-字段代码 */
+        /** 属性代码对应的列名 */
         private String fieldCode = "code";
 
-        /** 列-字段值 */
+        /** 属性值对应的列名 */
         private String fieldValue = "value";
 
-        /** 列-字段ID */
+        /** 主键对应的列名 */
         private String fieldId = "id";
 
-        /** 列-字段父ID */
+        /** 父主键的列名 */
         private String fieldParentId = "parent_id";
+    }
+
+    @Data
+    @Component
+    @ConfigurationProperties("stars.config")
+    public static class Config {
+
+        /** 默认映射属性的后缀 */
+        private String[] mappingSuffix = {"Text", "Str", "Ext"};
     }
 }

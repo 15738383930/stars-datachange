@@ -6,12 +6,14 @@ import com.stars.datachange.autoconfigure.StarsProperties;
 import com.stars.datachange.exception.ChangeModelException;
 import com.stars.datachange.exception.ChangeModelPropertyException;
 import com.stars.datachange.mapper.StarsDictionaryMapper;
+import com.stars.datachange.model.code.BaseCode;
 import com.stars.datachange.model.response.DataChangeContrastResult;
 import com.stars.datachange.model.response.DataDictionaryResult;
 import com.stars.datachange.module.Compatible;
 import com.stars.datachange.module.DefaultCompatible;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
  * @author zhou
  * @since 2021/9/6 10:00
  */
+@Slf4j
 @Component
 public final class DataChangeUtils {
 
@@ -49,9 +52,8 @@ public final class DataChangeUtils {
      * @return java.util.Map
      * @author zhouhao
      * @since  2021/9/7 11:14
-     * @throws java.lang.Exception 异常
      */
-    public static Map<String, Object> dataChange(Object data) throws Exception {
+    public static Map<String, Object> dataChange(Object data) {
         return dataChange(data, Process.create(data.getClass(), new Process()));
     }
 
@@ -63,13 +65,12 @@ public final class DataChangeUtils {
      * @param data 数据集
      * @author zhouhao
      * @since  2022/4/30 10:35
-     * @throws java.lang.Exception 异常
      */
-    public static <T> void dataChangeToBean(T data) throws Exception {
+    public static <T> void dataChangeToBean(T data) {
         dataChangeToBean(data, Process.create(data.getClass(), new Process()));
     }
 
-    private static Map<String, Object> dataChange(Object data, Process process) throws Exception {
+    private static Map<String, Object> dataChange(Object data, Process process) {
         final Class<?> dataClass = data.getClass();
 
         Map<String, Object> result = BeanUtils.beanToMap(data);
@@ -115,7 +116,7 @@ public final class DataChangeUtils {
 
             // 转换
             if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                result.put(key, getValue(process.getModelCode(), key, result.get(key).toString()));
+                result.put(key, BaseCode.value(process.getModelCode(), key, result.get(key).toString()));
                 continue;
             }
             result.put(key, getValue(process.getDictionaryResult(), key, result.get(key).toString()));
@@ -123,7 +124,8 @@ public final class DataChangeUtils {
         return result;
     }
 
-    private static <T> void dataChangeToBean(T data, Process process) throws Exception {
+    @SneakyThrows
+    private static <T> void dataChangeToBean(T data, Process process) {
         final Class<?> dataClass = data.getClass();
 
         final List<Field> fields = getFields(dataClass, new ArrayList<>());
@@ -171,7 +173,7 @@ public final class DataChangeUtils {
 
             // 转换
             if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                mappedField.set(data, getValue(process.getModelCode(), name, value.toString()));
+                mappedField.set(data, BaseCode.value(process.getModelCode(), name, value.toString()));
                 continue;
             }
 
@@ -186,9 +188,8 @@ public final class DataChangeUtils {
      * @param oldData 变更前的数据
      * @param newData 变更后的数据
      * @return 数据转换对比后的结果集
-     * @throws java.lang.Exception 异常
      */
-    public static List<DataChangeContrastResult> dataContrast(Object oldData, Object newData) throws Exception {
+    public static List<DataChangeContrastResult> dataContrast(Object oldData, Object newData) {
         List<DataChangeContrastResult> result = new ArrayList<>();
 
         final Process process = Process.create(oldData.getClass(), new Process());
@@ -260,7 +261,7 @@ public final class DataChangeUtils {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
                 String s = list.get(i);
-                s = (String) getValue(modelCode, key, s);
+                s = BaseCode.value(modelCode, key, s);
                 if (StringUtils.isNotEmpty(s)) {
                     sb.append(s).append(list.size() - 1 == i ? "" : delimiter);
                 }
@@ -297,23 +298,6 @@ public final class DataChangeUtils {
             return sb.toString();
         }
         return "";
-    }
-
-    /**
-     * 获取属性值
-     * @param modelCode 代码模型
-     * @param key 属性名
-     * @param value 属性代码
-     * @return java.lang.Object 转义后的值
-     * @author zhouhao
-     * @since  2020/5/29 13:16
-     */
-    private static Object getValue(Class<? extends Enum> modelCode, String key, String value) {
-        try {
-            return modelCode.getMethod("getValue", String.class, String.class).invoke(modelCode, key, value);
-        } catch (Exception e) {
-            throw new ChangeModelPropertyException("Data conversion failed, please check your dictionary enumeration configuration!");
-        }
     }
 
     /**
@@ -382,9 +366,18 @@ public final class DataChangeUtils {
         // 映射后的字段
         Field mappedField = null;
 
+        // 默认映射属性的后缀
+        String[] mappingSuffix;
+        try{
+            mappingSuffix = StarsProperties.config.getMappingSuffix();
+        }catch (Exception e){
+            mappingSuffix = MAPPING_SUFFIX;
+            log.warn("MAPPING_SUFFIX, switched back to default source. possible causes: abnormal program startup.");
+        }
+
         if (StringUtils.isEmpty(mappingName)) {
-            // 智能的匹配以Text、Str、Ext结尾的字段
-            for (String suffix : MAPPING_SUFFIX) {
+            // 智能的匹配以Text、Str、Ext等结尾的字段
+            for (String suffix : mappingSuffix) {
                 try {
                     mappedField = dataClass.getDeclaredField(name + suffix);
                     break;
@@ -546,6 +539,9 @@ public final class DataChangeUtils {
                 }
                 if(process.getModelCode().equals(Enum.class)){
                     throw new ChangeModelException("Failed to bind code model!");
+                }
+                if(!Arrays.asList(process.getModelCode().getInterfaces()).contains(BaseCode.class)){
+                    throw new ChangeModelException(String.format("%s must be implements com.stars.datachange.model.code.BaseCode", process.getModelCode().getName()));
                 }
             }
 

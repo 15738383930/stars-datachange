@@ -1,5 +1,7 @@
 package com.stars.datachange.utils;
 
+import lombok.SneakyThrows;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -21,9 +23,9 @@ public class BeanUtils extends org.springframework.beans.BeanUtils {
      * @return java.lang.Object
      * @author zhouhao
      * @since  2021/9/9 15:16
-     * @throws java.lang.Exception 异常
      */
-    public static Object mapToBean(Map<String, Object> map, Class<?> beanClass) throws Exception {
+    @SneakyThrows
+    public static Object mapToBean(Map<String, Object> map, Class<?> beanClass) {
         if (map == null) {
             return null;
         }
@@ -48,9 +50,9 @@ public class BeanUtils extends org.springframework.beans.BeanUtils {
      * @return java.util.Map
      * @author zhouhao
      * @since  2021/9/9 15:22
-     * @throws java.lang.Exception 异常
      */
-    public static Map<String, Object> beanToMap(Object obj) throws Exception {
+    @SneakyThrows
+    public static Map<String, Object> beanToMap(Object obj) {
         if(obj == null) {
             return null;
         }
