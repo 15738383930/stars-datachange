@@ -260,8 +260,7 @@ public final class DataChangeUtils {
             List<String> list = Arrays.asList(data.split(delimiter_));
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
-                String s = list.get(i);
-                s = BaseCode.value(modelCode, key, s);
+                String s = BaseCode.value(modelCode, key, list.get(i));
                 if (StringUtils.isNotEmpty(s)) {
                     sb.append(s).append(list.size() - 1 == i ? "" : delimiter);
                 }
@@ -289,8 +288,7 @@ public final class DataChangeUtils {
             List<String> list = Arrays.asList(data.split(delimiter_));
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
-                String s = list.get(i);
-                s = getValue(result, key, s);
+                String s = getValue(result, key, list.get(i));
                 if (StringUtils.isNotEmpty(s)) {
                     sb.append(s).append(list.size() - 1 == i ? "" : delimiter);
                 }
@@ -310,12 +308,11 @@ public final class DataChangeUtils {
      * @since  2020/5/29 13:16
      */
     private static String getValue(Set<DataDictionaryResult> result, String name, String code) {
-        List<DataDictionaryResult> collect = result.stream().filter(o -> o.getName().equals(name)).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(collect)){
+        Set<DataDictionaryResult.Map> maps = result.stream().filter(o -> o.getName().equals(name)).findFirst().map(DataDictionaryResult::getMaps).orElseGet(LinkedHashSet::new);
+        if(CollectionUtils.isEmpty(maps)){
             return code;
         }
-        List<DataDictionaryResult.Map> maps = collect.get(0).getMaps().stream().filter(o -> o.getCode().equals(code)).collect(Collectors.toList());
-        return CollectionUtils.isEmpty(maps) ? code : maps.get(0).getValue();
+        return maps.stream().filter(o -> o.getCode().equals(code)).findFirst().map(DataDictionaryResult.Map::getValue).orElse(code);
     }
 
     /**
