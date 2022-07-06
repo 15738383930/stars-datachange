@@ -372,21 +372,25 @@ public final class DataChangeUtils {
             log.warn("MAPPING_SUFFIX, switched back to default source. possible causes: abnormal program startup.");
         }
 
+        // 未手动定义属性映射，自动匹配属性映射
         if (StringUtils.isEmpty(mappingName)) {
-            // 智能的匹配以Text、Str、Ext等结尾的字段
+
+            // 智能匹配以Text、Str、Ext等结尾的字段
             for (String suffix : mappingSuffix) {
                 try {
                     mappedField = dataClass.getDeclaredField(name + suffix);
                     break;
-                } catch (NoSuchFieldException ignored) {
-                }
+                } catch (NoSuchFieldException ignored) {}
             }
 
+            // 未匹配到属性映射，去父类中匹配
             if(Objects.isNull(mappedField)){
                 if(!dataClass.getSuperclass().equals(Object.class) && dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
                     mappedField = getMappedField(process, dataClass.getSuperclass(), field);
                 }
             }
+
+            // 未定义属性映射，使用源字段（前提：源字段为String类型）
             if(Objects.isNull(mappedField)){
                 if(!field.getType().equals(String.class)){
                     return null;
@@ -397,6 +401,7 @@ public final class DataChangeUtils {
             mappedName = mappingName;
         }
 
+        // 尝试使用 源字段 或 手动定义的属性映射
         if(Objects.isNull(mappedField)){
             try{
                 mappedField = dataClass.getDeclaredField(mappedName);
@@ -404,10 +409,12 @@ public final class DataChangeUtils {
                 if(dataClass.getSuperclass().equals(Object.class) || !dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
                     throw new ChangeModelPropertyException(String.format("Property mapping not found [%s] !", mappedName));
                 }
+                // 尝试使用父类的 源字段 或 手动定义的属性映射
                 mappedField = getMappedField(process, dataClass.getSuperclass(), field);
             }
         }
 
+        // 源字段/属性映射 类型必须为String
         if(!mappedField.getType().equals(String.class)){
             throw new ChangeModelPropertyException(String.format("The mapped property must be of type java.lang.String [%s] !", mappedField.getName()));
         }
