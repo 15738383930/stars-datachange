@@ -372,7 +372,7 @@ public final class DataChangeUtils {
             log.warn("MAPPING_SUFFIX, switched back to default source. possible causes: abnormal program startup.");
         }
 
-        // 未手动定义属性映射，自动匹配属性映射
+        // 未定义属性映射，自动匹配属性映射
         if (StringUtils.isEmpty(mappingName)) {
 
             // 智能匹配以Text、Str、Ext等结尾的字段
@@ -401,7 +401,7 @@ public final class DataChangeUtils {
             mappedName = mappingName;
         }
 
-        // 尝试使用 源字段 或 手动定义的属性映射
+        // 尝试使用 源字段 或 定义的属性映射
         if(Objects.isNull(mappedField)){
             try{
                 mappedField = dataClass.getDeclaredField(mappedName);
@@ -409,7 +409,7 @@ public final class DataChangeUtils {
                 if(dataClass.getSuperclass().equals(Object.class) || !dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
                     throw new ChangeModelPropertyException(String.format("Property mapping not found [%s] !", mappedName));
                 }
-                // 尝试使用父类的 源字段 或 手动定义的属性映射
+                // 尝试使用父类的 源字段 或 定义的属性映射
                 mappedField = getMappedField(process, dataClass.getSuperclass(), field);
             }
         }
@@ -435,7 +435,7 @@ public final class DataChangeUtils {
      */
     private static List<Field> getFields(Class<?> dataClass, List<Field> list) {
         list.addAll(new ArrayList<>(Arrays.asList(dataClass.getDeclaredFields())));
-        // 若父类是通用的，可跳过处理阶段
+        // 若父类是通用的，跳过处理阶段
         if(!dataClass.getSuperclass().equals(Object.class) && dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
             getFields(dataClass.getSuperclass(), list);
         }
@@ -635,7 +635,7 @@ public final class DataChangeUtils {
                                 .collect(Collectors.toSet())));
             }
 
-            // 若父类是通用的，可跳过处理阶段
+            // 若父类是通用的，跳过处理阶段
             if(!dataClass.getSuperclass().equals(Object.class) && dataClass.getSuperclass().isAnnotationPresent(ChangeModel.class)){
                 create(dataClass.getSuperclass(), process);
             }
