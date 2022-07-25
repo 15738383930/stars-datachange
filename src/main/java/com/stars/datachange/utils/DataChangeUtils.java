@@ -207,12 +207,8 @@ public final class DataChangeUtils {
             }
             Object old_ = oldData_.get(key);
             Object new_ = newData_.get(key);
-            if(Objects.nonNull(old_)){
-                if(!old_.equals(new_)){
-                    result.add(DataChangeContrastResult.builder().name(process.getChineseEnglish().get(key)).oldData(old_).newData(new_).build());
-                }
-            }else if(Objects.nonNull(new_)){
-                result.add(DataChangeContrastResult.builder().name(process.getChineseEnglish().get(key)).oldData(null).newData(new_).build());
+            if (!Objects.equals(old_, new_)) {
+                result.add(DataChangeContrastResult.builder().name(process.getChineseEnglish().get(key)).oldData(old_).newData(new_).build());
             }
         });
         return result;
@@ -347,7 +343,7 @@ public final class DataChangeUtils {
      * @date 2022/4/30 11:50
      * @param process 数据转换处理模型
      * @param dataClass 数据模型
-     * @param field 原字段
+     * @param field 源字段
      * @return java.lang.reflect.Field
      */
     private static Field getMappedField(Process process, Class<?> dataClass, Field field) {
