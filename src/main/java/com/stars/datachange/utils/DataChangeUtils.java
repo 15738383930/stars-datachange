@@ -317,7 +317,7 @@ public final class DataChangeUtils {
      * <br>实现思路：
      *      <br>把位运算的数值转换为二进制码，把二进制码反转方便后面遍历计算。
      *      <br>遍历二级制码时，遇1计算当前指针的平方，即：得出的多选值code，并添加到多选值列表中
-     *      <br>遍历结束后，按照多选值的大小进行排序并以逗号分隔的形式返回
+     *      <br>遍历结束后，多选值以逗号分隔的形式返回
      * @param num 位数值
      * @return java.lang.String 运算后的多选值（逗号分隔）
      * @author zhouhao
@@ -325,16 +325,13 @@ public final class DataChangeUtils {
      */
     private static String bitOperation(int num){
         String data = new StringBuffer(Integer.toBinaryString(num)).reverse().toString();
-        List<Integer> ints = new ArrayList<>();
-        int t = data.length();
-        for (int i = t - 1; i >= 0; i--) {
-            t = data.lastIndexOf("1",t - 1);
-            if(t == -1){
-                break;
-            }
-            ints.add((int) Math.pow(2, t));
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < data.length(); i++) {
+            i = data.indexOf("1", i);
+            // 1 * 2的i次方
+            result.add(1 << i);
         }
-        return ints.stream().sorted().map(Object::toString).collect(Collectors.joining(","));
+        return result.stream().map(Object::toString).collect(Collectors.joining(","));
     }
 
     /**
