@@ -52,5 +52,8 @@ public final class StarsProperties {
 
         /** 默认映射属性的后缀 */
         private String[] mappingSuffix = {"Text", "Str", "Ext"};
+
+        /** 是否启用stars-datachange banner */
+        private boolean banner = true;
     }
 }
