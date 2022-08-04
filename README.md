@@ -86,7 +86,7 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 #### 参与贡献
 
 1.  感谢 [SpringBootStarter](https://github.com/SpringBootStarter/) 提出的建设性见解
-1.  感谢 [Speciallei](https://gitee.com/speciallei) 提供的本项目logo原型
+1.  感谢 [Speciallei](https://gitee.com/speciallei) 提供的logo原型
 
 
 #### 反馈交流
