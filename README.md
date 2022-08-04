@@ -1,7 +1,7 @@
 # stars-datachange
 
 #### 介绍
-**开源数据对比、转换工具，强大的可插拔、非侵入式设计，两种数据源转换结构，可优雅的进行数据字典转换、对比。
+**开源数据对比、转换工具，强大的可插拔、非侵入式设计，两种数据转换结构，如女朋友般优雅、丝滑。
 
 #### 软件架构
 基于springboot、springboot-web、mybatis、lombok
@@ -15,7 +15,7 @@
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 
@@ -95,6 +95,7 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 
 #### 版本更新说明
 
+- v1.4.0：本次升级，明确了项目特色：如女朋友般优雅、丝滑；添加了项目启动banner（可通过stars.config.banner=false来关闭）；优化了n次代码结构，看上去更加赏心悦目，丝滑。
 - v1.3.0：优化了代码结构；减少了使用者的编码量；定义了字典枚举的规范；添加了自定义数据转换（k-v互转）[v1.3.0新特性](https://blog.csdn.net/qq_36206259/article/details/125021976?spm=1001.2014.3001.5501)
 - v1.2.0：由v1.1.2变更为v1.2.0（较大升级）[v1.2.0新特性](https://blog.csdn.net/qq_36206259/article/details/124515865?spm=1001.2014.3001.5501)
 - v1.1.2：修复了数据转换时，通用父类导致的数据转换异常；添加了属性映射模式的数据转换功能。
