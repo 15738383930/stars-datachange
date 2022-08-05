@@ -15,7 +15,7 @@
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 </dependency>
 ```
 
