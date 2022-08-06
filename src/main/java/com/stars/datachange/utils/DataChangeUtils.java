@@ -5,11 +5,11 @@ import com.stars.datachange.annotation.ChangeModelProperty;
 import com.stars.datachange.autoconfigure.StarsProperties;
 import com.stars.datachange.exception.ChangeModelException;
 import com.stars.datachange.exception.ChangeModelPropertyException;
-import com.stars.datachange.mapper.StarsDictionaryMapper;
 import com.stars.datachange.model.code.BaseCode;
 import com.stars.datachange.model.response.DataChangeContrastResult;
 import com.stars.datachange.model.response.DataDictionaryResult;
 import com.stars.datachange.module.Compatible;
+import com.stars.datachange.module.DataDictionary;
 import com.stars.datachange.module.DefaultCompatible;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -34,12 +34,12 @@ public final class DataChangeUtils {
     /** 默认映射属性的后缀 */
     private static final String[] MAPPING_SUFFIX = {"Text", "Str", "Ext"};
 
-    private static StarsDictionaryMapper starsDictionaryMapper;
+    private static DataDictionary dataDictionary;
 
     private static Compatible compatible;
 
-    public DataChangeUtils(StarsDictionaryMapper starsDictionaryMapper, Compatible compatible){
-        DataChangeUtils.starsDictionaryMapper = starsDictionaryMapper;
+    public DataChangeUtils(DataDictionary dataDictionary, Compatible compatible){
+        DataChangeUtils.dataDictionary = dataDictionary;
         DataChangeUtils.compatible = compatible;
     }
 
@@ -549,7 +549,7 @@ public final class DataChangeUtils {
                         ? dataClass.getSimpleName().substring(0,1).toLowerCase().concat(dataClass.getSimpleName().substring(1))
                         : process.getChangeModel().modelName();
                 try{
-                    process.setDictionaryResult(starsDictionaryMapper.findList(StarsProperties.dictionary, key));
+                    process.setDictionaryResult(dataDictionary.dataDictionary(key));
                 }catch (Exception e){
                     throw new ChangeModelException("Failed to bind data dictionary, please check configuration!");
                 }
