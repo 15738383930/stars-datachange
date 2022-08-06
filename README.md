@@ -15,7 +15,7 @@
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.4.1</version>
+    <version>1.5.0</version>
 </dependency>
 ```
 
@@ -96,6 +96,7 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 
 #### 版本更新说明
 
+- v1.5.0：修复了springboot依赖漏洞；（重点）添加了动态数据字典自定义功能 [v1.5.0特色](https://blog.csdn.net/qq_36206259/article/details/126193341)
 - v1.4.0：明确了项目特色：如女朋友般优雅、丝滑；添加了项目启动banner；优化了n次代码结构，看上去更加丝滑~ [v1.4.0特色](https://blog.csdn.net/qq_36206259/article/details/126161820?spm=1001.2014.3001.5501)
 - v1.3.0：优化了代码结构；减少了使用者的编码量；定义了字典枚举的规范；添加了自定义数据转换（k-v互转）[v1.3.0新特性](https://blog.csdn.net/qq_36206259/article/details/125021976?spm=1001.2014.3001.5501)
 - v1.2.0：由v1.1.2变更为v1.2.0（较大升级）[v1.2.0新特性](https://blog.csdn.net/qq_36206259/article/details/124515865?spm=1001.2014.3001.5501)
