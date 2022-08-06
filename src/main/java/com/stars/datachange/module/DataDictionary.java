@@ -16,7 +16,7 @@ public interface DataDictionary {
     /**
      * 数据字典<p>
      *     功能实现 可参考：{@link DefaultDataDictionary#dataDictionary(String)}
-     * @param key 字典对象名
+     * @param key 数据模型名（对应@ChangeModel中的 modelName）
      * @author zhouhao
      * @since 2022/8/6 11:34
      * @return 数据字典结果集
