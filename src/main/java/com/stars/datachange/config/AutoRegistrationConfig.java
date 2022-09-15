@@ -23,8 +23,8 @@ public class AutoRegistrationConfig {
     public void banner() throws IOException {
         if (StarsProperties.config.isBanner()) {
             // logo
-            String path1 = "stars-datachange-banner.txt";
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource(path1).getInputStream()))) {
+            String logo = "stars-datachange-banner.txt";
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource(logo).getInputStream()))) {
                 reader.lines().forEach(System.out::println);
             }
             // version

@@ -1,6 +1,9 @@
 package com.stars.datachange.model.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashSet;
 
@@ -24,6 +27,9 @@ public class DataDictionaryResult {
      * @since  2021/9/8 17:29
      */
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Map {
 
         /** 字段代码 */
