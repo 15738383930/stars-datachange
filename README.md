@@ -1,4 +1,5 @@
 # stars-datachange
+![stars-datachange](src/main/resources/logo.jpg)
 
 #### 介绍
 **开源数据对比、转换工具，强大的可插拔、非侵入式设计，两种数据转换结构，如女朋友般优雅、丝滑。
