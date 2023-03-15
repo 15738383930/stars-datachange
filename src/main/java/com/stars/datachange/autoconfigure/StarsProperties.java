@@ -55,5 +55,8 @@ public final class StarsProperties {
 
         /** 是否启用stars-datachange banner */
         private boolean banner = true;
+
+        /** 是否数据库环境 */
+        private boolean db = true;
     }
 }

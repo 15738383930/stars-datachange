@@ -5,9 +5,9 @@ package com.stars.datachange.exception;
  * @author zhouhao
  * @since  2021/9/6 10:46
  */
-class ChangeException extends RuntimeException {
+public class ChangeException extends RuntimeException {
 
-    ChangeException(String msg) {
+    public ChangeException(String msg) {
         super(msg);
     }
 

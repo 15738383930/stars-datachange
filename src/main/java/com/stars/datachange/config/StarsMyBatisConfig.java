@@ -5,6 +5,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Bean;
  * @since  2021/9/10 15:19
  */
 @org.springframework.context.annotation.Configuration
+@ConditionalOnProperty(prefix = "stars.config", name = "db", havingValue = "true", matchIfMissing = true)
 @MapperScan("com.stars.datachange.mapper")
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @AutoConfigureBefore(MybatisAutoConfiguration.class)

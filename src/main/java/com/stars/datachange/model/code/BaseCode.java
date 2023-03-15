@@ -85,10 +85,20 @@ public interface BaseCode {
         return null;
     }
 
-    @SneakyThrows
     static String value(Class<? extends Enum> modelCode, String t, String k) {
-        if (StringUtils.isEmpty(k)) {
-            return k;
+        return change(modelCode, t, k, null);
+    }
+
+    static String key(Class<? extends Enum> modelCode, String t, String v) {
+        return change(modelCode, t, null, v);
+    }
+
+    @SneakyThrows
+    static String change(Class<? extends Enum> modelCode, String t, String k, String v) {
+        final boolean empty = StringUtils.isEmpty(k) && StringUtils.isEmpty(v);
+        final boolean notEmpty = StringUtils.isNotEmpty(k) && StringUtils.isNotEmpty(v);
+        if (empty || notEmpty) {
+            return null;
         }
 
         for (Enum o : modelCode.getEnumConstants()) {
@@ -103,11 +113,19 @@ public interface BaseCode {
                 finalv = Objects.isNull(finalv) ? modelCode.getMethod("getV").invoke(o) : finalv;
             }
 
-            if (StringUtils.valueOf(finalt).equals(t) && k.equals(StringUtils.valueOf(finalk))) {
+            if (!Objects.equals(StringUtils.valueOf(finalt), t)) {
+                continue;
+            }
+
+            if (StringUtils.isNotEmpty(k) && k.equals(StringUtils.valueOf(finalk))) {
                 return StringUtils.valueOf(finalv);
             }
+
+            if (StringUtils.isNotEmpty(v) && v.equals(StringUtils.valueOf(finalv))) {
+                return StringUtils.valueOf(finalk);
+            }
         }
-        return k;
+        return StringUtils.isEmpty(k) ? v : k;
     }
 
     /**

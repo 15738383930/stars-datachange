@@ -3,6 +3,7 @@ package com.stars.datachange.utils;
 import com.stars.datachange.annotation.ChangeModel;
 import com.stars.datachange.annotation.ChangeModelProperty;
 import com.stars.datachange.autoconfigure.StarsProperties;
+import com.stars.datachange.exception.ChangeException;
 import com.stars.datachange.exception.ChangeModelException;
 import com.stars.datachange.exception.ChangeModelPropertyException;
 import com.stars.datachange.model.code.BaseCode;
@@ -38,6 +39,9 @@ public final class DataChangeUtils {
 
     private static Compatible compatible;
 
+    /** 是否反转（V转K） 默认false */
+    private static final ThreadLocal<Boolean> ROLLBACK = ThreadLocal.withInitial(() -> false);
+
     public DataChangeUtils(DataDictionary dataDictionary, Compatible compatible){
         DataChangeUtils.dataDictionary = dataDictionary;
         DataChangeUtils.compatible = compatible;
@@ -54,7 +58,27 @@ public final class DataChangeUtils {
      * @since  2021/9/7 11:14
      */
     public static Map<String, Object> dataChange(Object data) {
-        return dataChange(data, Process.create(data.getClass(), new Process()));
+        return dataChange(data, false);
+    }
+
+    /**
+     * 数据转换
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @param rollback 是否反转（V转K） 默认false
+     * @return java.util.Map
+     * @author zhouhao
+     * @since  2021/9/7 11:14
+     */
+    public static Map<String, Object> dataChange(Object data, boolean rollback) {
+        try {
+            ROLLBACK.set(rollback);
+            return dataChange(data, Process.create(data.getClass(), new Process()));
+        } finally {
+            ROLLBACK.remove();
+        }
     }
 
     /**
@@ -67,7 +91,26 @@ public final class DataChangeUtils {
      * @since  2022/4/30 10:35
      */
     public static <T> void dataChangeToBean(T data) {
-        dataChangeToBean(data, Process.create(data.getClass(), new Process()));
+        dataChangeToBean(data, false);
+    }
+
+    /**
+     * 数据转换（转换到原对象）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @param rollback 是否反转（V转K） 默认false
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     */
+    public static <T> void dataChangeToBean(T data, boolean rollback) {
+        try {
+            ROLLBACK.set(rollback);
+            dataChangeToBean(data, Process.create(data.getClass(), new Process()));
+        } finally {
+            ROLLBACK.remove();
+        }
     }
 
     private static Map<String, Object> dataChange(Object data, Process process) {
@@ -94,11 +137,15 @@ public final class DataChangeUtils {
 
             // 位运算转换
             if(process.isBitOperation(key)){
+                if (ROLLBACK.get()) {
+                    log.warn("The value of bit operations does not support inversion!");
+                    continue;
+                }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    result.put(key, splitConversion(process.getModelCode(), key, bitOperation(Integer.parseInt(result.get(key).toString()))));
+                    result.put(key, splitConversion(process.getModelCode(), key, bitOperation(result.get(key))));
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    result.put(key, splitConversion(process.getDictionaryResult(), key, bitOperation(Integer.parseInt(result.get(key).toString()))));
+                    result.put(key, splitConversion(process.getDictionaryResult(), key, bitOperation(result.get(key))));
                 }
                 continue;
             }
@@ -115,11 +162,16 @@ public final class DataChangeUtils {
             }
 
             // 转换
-            if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                result.put(key, BaseCode.value(process.getModelCode(), key, result.get(key).toString()));
+            {
+                if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
+                    String o = ROLLBACK.get() ? BaseCode.key(process.getModelCode(), key, result.get(key).toString()) : BaseCode.value(process.getModelCode(), key, result.get(key).toString());
+                    result.put(key, o);
+                }
+                if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
+                    result.put(key, getValue(process.getDictionaryResult(), key, result.get(key).toString()));
+                }
                 continue;
             }
-            result.put(key, getValue(process.getDictionaryResult(), key, result.get(key).toString()));
         }
         return result;
     }
@@ -151,11 +203,15 @@ public final class DataChangeUtils {
 
             // 位运算转换
             if(process.isBitOperation(name)){
+                if (ROLLBACK.get()) {
+                    log.warn("The value of bit operations does not support inversion!");
+                    continue;
+                }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    mappedField.set(data, splitConversion(process.getModelCode(), name, bitOperation((Integer) value)));
+                    mappedField.set(data, splitConversion(process.getModelCode(), name, bitOperation(value)));
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    mappedField.set(data, splitConversion(process.getDictionaryResult(), name, bitOperation((Integer) value)));
+                    mappedField.set(data, splitConversion(process.getDictionaryResult(), name, bitOperation(value)));
                 }
                 continue;
             }
@@ -172,12 +228,16 @@ public final class DataChangeUtils {
             }
 
             // 转换
-            if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                mappedField.set(data, BaseCode.value(process.getModelCode(), name, value.toString()));
+            {
+                if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
+                    final String o = ROLLBACK.get() ? BaseCode.key(process.getModelCode(), name, value.toString()) : BaseCode.value(process.getModelCode(), name, value.toString());
+                    mappedField.set(data, o);
+                }
+                if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
+                    mappedField.set(data, getValue(process.getDictionaryResult(), name, value.toString()));
+                }
                 continue;
             }
-
-            mappedField.set(data, getValue(process.getDictionaryResult(), name, value.toString()));
         }
     }
 
@@ -198,32 +258,37 @@ public final class DataChangeUtils {
             throw new ChangeModelException("This function does not support shortcut mode temporarily!");
         }
 
-        Map<String, Object> oldData_ = dataChange(oldData, process);
-        Map<String, Object> newData_ = dataChange(newData, process);
+        try {
+            ROLLBACK.set(false);
+            Map<String, Object> oldData_ = dataChange(oldData, process);
+            Map<String, Object> newData_ = dataChange(newData, process);
 
-        oldData_.keySet().forEach(key -> {
-            if(process.isSkipComparison(key)) {
-                return;
-            }
-            Object old_ = oldData_.get(key);
-            Object new_ = newData_.get(key);
-            if (!Objects.equals(old_, new_)) {
-                result.add(DataChangeContrastResult.builder().name(process.getChineseEnglish().get(key)).oldData(old_).newData(new_).build());
-            }
-        });
+            oldData_.keySet().forEach(key -> {
+                if(process.isSkipComparison(key)) {
+                    return;
+                }
+                Object old_ = oldData_.get(key);
+                Object new_ = newData_.get(key);
+                if (!Objects.equals(old_, new_)) {
+                    result.add(DataChangeContrastResult.builder().name(process.getChineseEnglish().get(key)).oldData(old_).newData(new_).build());
+                }
+            });
+        } finally {
+            ROLLBACK.remove();
+        }
         return result;
     }
 
     /**
      * 多选值分割转义
-     * @param key 要转义的字段名
+     * @param name 要转义的字段名
      * @param data 多选值（逗号分割）
      * @return java.lang.String 转义后的多选值（逗号分割）
      * @author zhouhao
      * @since  2020/5/29 15:01
      */
-    private static String splitConversion(Class<? extends Enum> modelCode, String key, String data) {
-        return splitConversion(modelCode, key, data, ",");
+    private static String splitConversion(Class<? extends Enum> modelCode, String name, String data) {
+        return splitConversion(modelCode, name, data, ",");
     }
 
     /**
@@ -240,23 +305,23 @@ public final class DataChangeUtils {
 
     /**
      * 多选值分割转义
-     * @param key 要转义的字段名
+     * @param name 要转义的字段名
      * @param data 多选值（regex分割）
      * @param delimiter 分割符
      * @return java.lang.String 通过delimiter转义后的多选值
      * @author zhouhao
      * @since  2020/5/29 15:01
      */
-    private static String splitConversion(Class<? extends Enum> modelCode, String key, String data, String delimiter) {
+    private static String splitConversion(Class<? extends Enum> modelCode, String name, String data, String delimiter) {
         if(StringUtils.isEmpty(delimiter)){
-            return splitConversion(modelCode, key, data);
+            return splitConversion(modelCode, name, data);
         }
         if (StringUtils.isNotEmpty(data)) {
             String delimiter_ = delimiter.replace(".", "\\.").replace("|", "\\|");
             List<String> list = Arrays.asList(data.split(delimiter_));
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
-                String s = BaseCode.value(modelCode, key, list.get(i));
+                String s = ROLLBACK.get() ? BaseCode.key(modelCode, name, list.get(i)) : BaseCode.value(modelCode, name, list.get(i));
                 if (StringUtils.isNotEmpty(s)) {
                     sb.append(s).append(list.size() - 1 == i ? "" : delimiter);
                 }
@@ -298,17 +363,20 @@ public final class DataChangeUtils {
      * 获取属性值
      * @param result 数据字典
      * @param name 属性名
-     * @param code 属性代码
+     * @param oo 属性原值
      * @return java.lang.Object 转义后的值
      * @author zhouhao
      * @since  2020/5/29 13:16
      */
-    private static String getValue(Set<DataDictionaryResult> result, String name, String code) {
+    private static String getValue(Set<DataDictionaryResult> result, String name, String oo) {
         Set<DataDictionaryResult.Map> maps = result.stream().filter(o -> o.getName().equals(name)).findFirst().map(DataDictionaryResult::getMaps).orElseGet(LinkedHashSet::new);
         if(CollectionUtils.isEmpty(maps)){
-            return code;
+            return oo;
         }
-        return maps.stream().filter(o -> o.getCode().equals(code)).findFirst().map(DataDictionaryResult.Map::getValue).orElse(code);
+        if (ROLLBACK.get()) {
+            return maps.stream().filter(o -> o.getValue().equals(oo)).findFirst().map(DataDictionaryResult.Map::getCode).orElse(oo);
+        }
+        return maps.stream().filter(o -> o.getCode().equals(oo)).findFirst().map(DataDictionaryResult.Map::getValue).orElse(oo);
     }
 
     /**
@@ -318,12 +386,17 @@ public final class DataChangeUtils {
      *      <br>把位运算的数值转换为二进制码，把二进制码反转方便后面遍历计算。
      *      <br>遍历二级制码时，遇1计算当前指针的平方，即：得出的多选值code，并添加到多选值列表中
      *      <br>遍历结束后，多选值以逗号分隔的形式返回
-     * @param num 位数值
+     * @param o 位数值
      * @return java.lang.String 运算后的多选值（逗号分隔）
      * @author zhouhao
      * @date  2020/5/28 19:58
      */
-    private static String bitOperation(int num){
+    private static String bitOperation(Object o){
+        if (!RegexUtils.isNumber(o.toString())) {
+            log.warn("Bit operations is not possible, Please provide a valid bit operations value!");
+            return o.toString();
+        }
+        final int num = Integer.parseInt(o.toString());
         String data = new StringBuffer(Integer.toBinaryString(num)).reverse().toString();
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < data.length(); i++) {
@@ -550,6 +623,8 @@ public final class DataChangeUtils {
                         : process.getChangeModel().modelName();
                 try{
                     process.setDictionaryResult(dataDictionary.dataDictionary(key));
+                }catch (ChangeException e){
+                    throw e;
                 }catch (Exception e){
                     throw new ChangeModelException("Failed to bind data dictionary, please check configuration!");
                 }
