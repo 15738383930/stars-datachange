@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
     <name>stars-datachange</name>
     <description>**开源数据对比、转换工具，强大的可插拔、非侵入式设计，两种数据转换结构，如女朋友般优雅、丝滑。</description>
     <url>https://gitee.com/xuan_zheng/stars-datachange</url>

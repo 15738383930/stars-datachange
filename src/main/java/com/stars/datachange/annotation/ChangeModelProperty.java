@@ -95,4 +95,13 @@ public @interface ChangeModelProperty {
      * @since  2022/4/30 10:35
      */
     String mapping() default "";
+
+    /**
+     * An alias for a property<p>
+     *     When converting data, you can replace the previous attribute name for data conversion
+     * @return String
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     */
+    String alias() default "";
 }

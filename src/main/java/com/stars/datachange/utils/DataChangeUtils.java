@@ -135,6 +135,9 @@ public final class DataChangeUtils {
                 continue;
             }
 
+            // 字段别名
+            String keyAlias = StringUtils.isEmpty(process.getAlias().get(key)) ? key : process.getAlias().get(key);
+
             // 位运算转换
             if(process.isBitOperation(key)){
                 if (ROLLBACK.get()) {
@@ -142,10 +145,10 @@ public final class DataChangeUtils {
                     continue;
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    result.put(key, splitConversion(process.getModelCode(), key, bitOperation(result.get(key))));
+                    result.put(key, splitConversion(process.getModelCode(), keyAlias, bitOperation(result.get(key))));
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    result.put(key, splitConversion(process.getDictionaryResult(), key, bitOperation(result.get(key))));
+                    result.put(key, splitConversion(process.getDictionaryResult(), keyAlias, bitOperation(result.get(key))));
                 }
                 continue;
             }
@@ -153,10 +156,10 @@ public final class DataChangeUtils {
             // 分割转换
             if(process.isSplit(key)){
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    result.put(key, splitConversion(process.getModelCode(), key, result.get(key).toString(), process.getSplitDelimiter().get(key)));
+                    result.put(key, splitConversion(process.getModelCode(), keyAlias, result.get(key).toString(), process.getSplitDelimiter().get(key)));
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    result.put(key, splitConversion(process.getDictionaryResult(), key, result.get(key).toString(), process.getSplitDelimiter().get(key)));
+                    result.put(key, splitConversion(process.getDictionaryResult(), keyAlias, result.get(key).toString(), process.getSplitDelimiter().get(key)));
                 }
                 continue;
             }
@@ -164,11 +167,11 @@ public final class DataChangeUtils {
             // 转换
             {
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    String o = ROLLBACK.get() ? BaseCode.key(process.getModelCode(), key, result.get(key).toString()) : BaseCode.value(process.getModelCode(), key, result.get(key).toString());
+                    String o = ROLLBACK.get() ? BaseCode.key(process.getModelCode(), keyAlias, result.get(key).toString()) : BaseCode.value(process.getModelCode(), keyAlias, result.get(key).toString());
                     result.put(key, o);
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    result.put(key, getValue(process.getDictionaryResult(), key, result.get(key).toString()));
+                    result.put(key, getValue(process.getDictionaryResult(), keyAlias, result.get(key).toString()));
                 }
                 continue;
             }
@@ -201,6 +204,9 @@ public final class DataChangeUtils {
             Field mappedField = getMappedField(process, dataClass, field);
             if (Objects.isNull(mappedField)) continue;
 
+            // 字段别名
+            String alias = StringUtils.isEmpty(process.getAlias().get(name)) ? name : process.getAlias().get(name);
+
             // 位运算转换
             if(process.isBitOperation(name)){
                 if (ROLLBACK.get()) {
@@ -208,10 +214,10 @@ public final class DataChangeUtils {
                     continue;
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    mappedField.set(data, splitConversion(process.getModelCode(), name, bitOperation(value)));
+                    mappedField.set(data, splitConversion(process.getModelCode(), alias, bitOperation(value)));
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    mappedField.set(data, splitConversion(process.getDictionaryResult(), name, bitOperation(value)));
+                    mappedField.set(data, splitConversion(process.getDictionaryResult(), alias, bitOperation(value)));
                 }
                 continue;
             }
@@ -219,10 +225,10 @@ public final class DataChangeUtils {
             // 分割转换
             if(process.isSplit(name)){
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    mappedField.set(data, splitConversion(process.getModelCode(), name, value.toString(), process.getSplitDelimiter().get(name)));
+                    mappedField.set(data, splitConversion(process.getModelCode(), alias, value.toString(), process.getSplitDelimiter().get(name)));
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    mappedField.set(data, splitConversion(process.getDictionaryResult(), name, value.toString(), process.getSplitDelimiter().get(name)));
+                    mappedField.set(data, splitConversion(process.getDictionaryResult(), alias, value.toString(), process.getSplitDelimiter().get(name)));
                 }
                 continue;
             }
@@ -230,11 +236,11 @@ public final class DataChangeUtils {
             // 转换
             {
                 if (process.getChangeModel().source().equals(ChangeModel.Source.ENUM)) {
-                    final String o = ROLLBACK.get() ? BaseCode.key(process.getModelCode(), name, value.toString()) : BaseCode.value(process.getModelCode(), name, value.toString());
+                    final String o = ROLLBACK.get() ? BaseCode.key(process.getModelCode(), alias, value.toString()) : BaseCode.value(process.getModelCode(), alias, value.toString());
                     mappedField.set(data, o);
                 }
                 if (process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                    mappedField.set(data, getValue(process.getDictionaryResult(), name, value.toString()));
+                    mappedField.set(data, getValue(process.getDictionaryResult(), alias, value.toString()));
                 }
                 continue;
             }
@@ -588,6 +594,13 @@ public final class DataChangeUtils {
         private Map<String, String> mapping = new HashMap<>();
 
         /**
+         * 属性的别名
+         * key-属性名
+         * value-别名
+         */
+        private Map<String, String> alias = new HashMap<>();
+
+        /**
          * 创建数据转换处理模型
          * @param dataClass 数据模型
          * @param process 数据转换处理模型
@@ -692,6 +705,10 @@ public final class DataChangeUtils {
 
                 if(StringUtils.isNotEmpty(anon.mapping())){
                     process.getMapping().put(name, anon.mapping());
+                }
+
+                if(StringUtils.isNotEmpty(anon.alias())){
+                    process.getAlias().put(name, anon.alias());
                 }
             }
             // 需要兼容的注解
