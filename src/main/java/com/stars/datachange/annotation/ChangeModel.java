@@ -51,7 +51,8 @@ public @interface ChangeModel {
     /**
      * Data model name<p>
      *     It takes effect when {@link ChangeModel#source} is set to {@code Source.DB}.<p>
-     *     The default is the class name under {@link ChangeModel} (naming convention: camel case, lowercase first letter)
+     *     The default is the class name under {@link ChangeModel} (naming convention: camel case, lowercase first letter)<p>
+     *     PS: If this parameter is set to "-1", all data in the DB dictionary table is used for data conversion<p>
      * @return String
      * @author zhouhao
      * @since  2021/9/13 14:06
@@ -69,7 +70,7 @@ public @interface ChangeModel {
     Class<? extends Annotation>[] compatible() default {};
 
     /**
-     * 数据转换来源
+     * Data Change Source
      * @author zhouhao
      * @since  2021/9/8 15:53
      */
