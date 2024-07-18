@@ -634,6 +634,10 @@ public final class DataChangeUtils {
                 String key = StringUtils.isEmpty(process.getChangeModel().modelName())
                         ? dataClass.getSimpleName().substring(0,1).toLowerCase().concat(dataClass.getSimpleName().substring(1))
                         : process.getChangeModel().modelName();
+                // v1.7 因最开始key的使用逻辑已经定义。故：退而求其次——modelName="-1"，认为查询整个字典表
+                if ("-1".equals(key)) {
+                    key = null;
+                }
                 try{
                     process.setDictionaryResult(dataDictionary.dataDictionary(key));
                 }catch (ChangeException e){

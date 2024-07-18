@@ -12,8 +12,10 @@
   
   <select id="findList" parameterType="com.stars.datachange.autoconfigure.StarsProperties$Dictionary" resultMap="dbDataResultMap">
     select ${dictionary.fieldName} name, ${dictionary.fieldCode} code, ${dictionary.fieldValue} value from ${dictionary.tableName}
-    where ${dictionary.fieldParentId} = (
-      select ${dictionary.fieldId} from ${dictionary.tableName} where ${dictionary.fieldName} = #{key, jdbcType=VARCHAR}
-    )
+    <if test="@com.stars.datachange.utils.StringUtils@isNotEmpty(key)">
+      where ${dictionary.fieldParentId} = (
+        select ${dictionary.fieldId} from ${dictionary.tableName} where ${dictionary.fieldName} = #{key, jdbcType=VARCHAR}
+      )
+    </if>
   </select>
 </mapper>
