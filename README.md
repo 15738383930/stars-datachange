@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.2</version>
 </dependency>
 ```
 [GitHub传送门](https://github.com/15738383930/stars-datachange)
@@ -99,6 +99,7 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 
 #### 版本更新说明
 
+- v1.7：添加了属性别名配置；添加了默认数据字典的全表查询逻辑；mapper配置文件目录更换 [v1.7特色](https://blog.csdn.net/qq_36206259/article/details/140540848)
 - v1.6.0：添加了数据转换反转功能；添加了非数据库项目环境下的使用配置 [v1.6.0特色](https://blog.csdn.net/qq_36206259/article/details/129553987)
 - v1.5.0：修复了springboot依赖漏洞；（重点）添加了动态数据字典自定义功能 [v1.5.0特色](https://blog.csdn.net/qq_36206259/article/details/126193341)
 - v1.4.0：明确了项目特色：如女朋友般优雅、丝滑；添加了项目启动banner；优化了n次代码结构，看上去更加丝滑~ [v1.4.0特色](https://blog.csdn.net/qq_36206259/article/details/126161820)
