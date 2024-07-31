@@ -31,7 +31,7 @@ public class AutoRegistrationConfig {
             String path = "META-INF/maven/com.gitee.xuan_zheng/stars-datachange/pom.properties";
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource(path).getInputStream()))) {
                 String version = reader.lines().filter(o -> o.contains("version")).map(o -> o.split("=")[1]).findFirst().orElse("");
-                System.out.println(String.format("                         %s\n", version));
+                System.out.println(String.format("                                           %s\n", version));
             }
         }
     }
