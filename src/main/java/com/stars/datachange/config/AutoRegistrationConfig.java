@@ -6,9 +6,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 自动注册配置
@@ -24,23 +23,16 @@ public class AutoRegistrationConfig {
         if (StarsProperties.config.isBanner()) {
             // logo
             String logo = "stars-datachange-banner.txt";
-            String logoSimple = "stars-datachange-banner-simple.txt";
             // version
-            String path = "META-INF/maven/com.gitee.xuan_zheng/stars-datachange/pom.properties";
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource(logo).getInputStream()));
-                 BufferedReader logoReader = new BufferedReader(new InputStreamReader(new ClassPathResource(logo).getInputStream()));
-                 BufferedReader logoSimpleReader = new BufferedReader(new InputStreamReader(new ClassPathResource(logoSimple).getInputStream()));
-                 BufferedReader versionReader = new BufferedReader(new InputStreamReader(new ClassPathResource(path).getInputStream()))) {
-                final long count = reader.lines().filter(o -> o.contains("⣠")).count();
-                String version = versionReader.lines().filter(o -> o.contains("version")).map(o -> o.split("=")[1]).findFirst().orElse("");
-                if (count > 0) {
-                    logoReader.lines().forEach(System.out::println);
-                    System.out.println(String.format("                         %s\n", version));
-                } else {
-                    logoSimpleReader.lines().forEach(System.out::println);
-                    System.out.println(String.format("                                           %s\n", version));
-                }
+            String pom = "META-INF/maven/com.gitee.xuan_zheng/stars-datachange/pom.properties";
+            System.setOut(new PrintStream(System.out, true, "UTF-8"));
+            try (BufferedReader logoReader = new BufferedReader(new InputStreamReader(new ClassPathResource(logo).getInputStream(), StandardCharsets.UTF_8));
+                 BufferedReader pomReader = new BufferedReader(new InputStreamReader(new ClassPathResource(pom).getInputStream()))) {
+                logoReader.lines().forEach(System.out::println);
+                String version = pomReader.lines().filter(o -> o.contains("version")).map(o -> o.split("=")[1]).findFirst().orElse("");
+                System.out.printf("                         %s\n", version);
             }
+            System.setOut(new PrintStream(System.out));
         }
     }
 }
