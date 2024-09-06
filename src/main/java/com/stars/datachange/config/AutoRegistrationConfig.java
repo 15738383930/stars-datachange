@@ -27,7 +27,7 @@ public class AutoRegistrationConfig {
             String pom = "META-INF/maven/com.gitee.xuan_zheng/stars-datachange/pom.properties";
             System.setOut(new PrintStream(System.out, true, "UTF-8"));
             try (BufferedReader logoReader = new BufferedReader(new InputStreamReader(new ClassPathResource(logo).getInputStream(), StandardCharsets.UTF_8));
-                 BufferedReader pomReader = new BufferedReader(new InputStreamReader(new ClassPathResource(pom).getInputStream()))) {
+                BufferedReader pomReader = new BufferedReader(new InputStreamReader(new ClassPathResource(pom).getInputStream()))) {
                 logoReader.lines().forEach(System.out::println);
                 String version = pomReader.lines().filter(o -> o.contains("version")).map(o -> o.split("=")[1]).findFirst().orElse("");
                 System.out.printf("                         %s\n", version);
