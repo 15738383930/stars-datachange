@@ -2,10 +2,12 @@ package com.stars.datachange.utils;
 
 import com.stars.datachange.annotation.ChangeModel;
 import com.stars.datachange.annotation.ChangeModelProperty;
+import com.stars.datachange.annotation.ReentrantChangeModelProperty;
 import com.stars.datachange.autoconfigure.StarsProperties;
 import com.stars.datachange.exception.ChangeException;
 import com.stars.datachange.exception.ChangeModelException;
 import com.stars.datachange.exception.ChangeModelPropertyException;
+import com.stars.datachange.exception.ReentrantChangeModelPropertyException;
 import com.stars.datachange.model.code.BaseCode;
 import com.stars.datachange.model.response.DataChangeContrastResult;
 import com.stars.datachange.model.response.DataDictionaryResult;
@@ -135,6 +137,40 @@ public final class DataChangeUtils {
                 continue;
             }
 
+            // 重入逻辑
+            if (process.isReentrant(key)) {
+                final Object keyO = result.get(key);
+                final Class<?> type = keyO.getClass();
+                // 校验数据类型（目前只允许：对象数组、单列结合、对象）
+                // 数组
+                if (type.isArray()) {
+                    final Object[] os = (Object[]) keyO;
+                    List<Map<String, Object>> osMaps = new ArrayList<>();
+                    for (Object o : os) {
+                        osMaps.add(dataChange(o, Process.create(o.getClass(), new Process())));
+                    }
+                    result.put(key, osMaps);
+
+                // 单列集合
+                } else if (Collection.class.isAssignableFrom(type)) {
+                    final Collection os = (Collection) keyO;
+                    List<Map<String, Object>> osMaps = new ArrayList<>();
+                    for (Object o : os) {
+                        osMaps.add(dataChange(o, Process.create(o.getClass(), new Process())));
+                    }
+                    result.put(key, osMaps);
+
+                // 对象
+                } else if (!type.getName().startsWith("java") && !type.getName().startsWith("javax")) {
+                    result.put(key, dataChange(keyO, Process.create(keyO.getClass(), new Process())));
+
+                // 其他数据类型
+                } else {
+                    throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s", "@com.stars.datachange.exception.ReentrantChangeModelProperty", key));
+                }
+                continue;
+            }
+
             // 字段别名
             String keyAlias = StringUtils.isEmpty(process.getAlias().get(key)) ? key : process.getAlias().get(key);
 
@@ -176,6 +212,7 @@ public final class DataChangeUtils {
                 continue;
             }
         }
+
         return result;
     }
 
@@ -197,6 +234,38 @@ public final class DataChangeUtils {
             }
 
             if(process.isIgnore(name)){
+                continue;
+            }
+
+            // 重入逻辑
+            if (process.isReentrant(name)) {
+                final Class<?> type = field.getType();
+                // 校验数据类型（目前只允许：对象数组、单列结合、对象）
+                // 数组
+                if (type.isArray()) {
+                    final Object[] os = (Object[]) value;
+                    for (Object o : os) {
+                        dataChangeToBean(o, Process.create(o.getClass(), new Process()));
+                    }
+                    field.set(data, os);
+
+                // 单列集合
+                } else if (Collection.class.isAssignableFrom(type)) {
+                    final Collection os = (Collection) value;
+                    for (Object o : os) {
+                        dataChangeToBean(o, Process.create(o.getClass(), new Process()));
+                    }
+                    field.set(data, os);
+
+                // 对象
+                } else if (!type.getName().startsWith("java") && !type.getName().startsWith("javax")) {
+                    dataChangeToBean(value, Process.create(value.getClass(), new Process()));
+                    field.set(data, value);
+
+                    // 其他数据类型
+                } else {
+                    throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s", "@com.stars.datachange.exception.ReentrantChangeModelProperty", name));
+                }
                 continue;
             }
 
@@ -555,6 +624,11 @@ public final class DataChangeUtils {
         private Set<String> skipComparisonFields = new HashSet<>();
 
         /**
+         * 重入的字段
+         */
+        private Set<String> reentrantFields = new HashSet<>();
+
+        /**
          * 英转中时，中文要忽略文本部分的分割符<br>
          *      例：<br><br>
          *      {@code @ChangeModelProperty(value = "女朋友类型：1-安静 2-火辣 3-清爽", chineseIgnoreDelimiter = "：")  } <br>
@@ -612,6 +686,7 @@ public final class DataChangeUtils {
             if(!dataClass.isAnnotationPresent(ChangeModel.class)){
                 throw new ChangeModelException("Data change model cannot be null!");
             }
+
             process.setChangeModel(dataClass.getAnnotation(ChangeModel.class));
 
             // 数据转换来源：数据代码模型
@@ -658,6 +733,12 @@ public final class DataChangeUtils {
                     field.setAccessible(true);
                 }
 
+                // 可重入字段
+                if (field.isAnnotationPresent(ReentrantChangeModelProperty.class)) {
+                    process.getReentrantFields().add(field.getName());
+                    continue;
+                }
+
                 // 默认扫描数据模型下所有属性的注解
                 if(process.getChangeModel().compatible().length == 0) {
                     compatible.addAll(Arrays.stream(field.getDeclaredAnnotations())
@@ -680,6 +761,7 @@ public final class DataChangeUtils {
 
                 // 获取字段上的注解值
                 ChangeModelProperty anon = field.getAnnotation(ChangeModelProperty.class);
+
                 if(anon.split()){
                     process.getSplitFields().add(field.getName());
                 }
@@ -785,6 +867,21 @@ public final class DataChangeUtils {
          */
         boolean isSkipComparison(String field) {
             Set<String> fields = this.getSkipComparisonFields();
+            if(CollectionUtils.isEmpty(fields)){
+                return false;
+            }
+            return fields.contains(field);
+        }
+
+        /**
+         * 是否可重入
+         * @param field 字段名
+         * @return boolean
+         * @author zhouhao
+         * @since  2021/9/7 11:29
+         */
+        boolean isReentrant(String field) {
+            Set<String> fields = this.getReentrantFields();
             if(CollectionUtils.isEmpty(fields)){
                 return false;
             }
