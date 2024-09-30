@@ -161,12 +161,14 @@ public final class DataChangeUtils {
                     result.put(key, osMaps);
 
                 // 对象
-                } else if (!type.getName().startsWith("java") && !type.getName().startsWith("javax")) {
-                    result.put(key, dataChange(keyO, Process.create(keyO.getClass(), new Process())));
-
-                // 其他数据类型
                 } else {
-                    throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s", "@com.stars.datachange.exception.ReentrantChangeModelProperty", key));
+                    // 其他数据类型
+                    if (!type.isAnnotationPresent(ChangeModel.class)) {
+                        throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s. Please use %s or %s or %s. (Data models of the above types it needs to be declared as @com.stars.datachange.annotation.ChangeModel)",
+                                "@com.stars.datachange.exception.ReentrantChangeModelProperty", key,
+                                "array", "java.util.Collection", "custom class"));
+                    }
+                    result.put(key, dataChange(keyO, Process.create(keyO.getClass(), new Process())));
                 }
                 continue;
             }
@@ -258,13 +260,15 @@ public final class DataChangeUtils {
                     field.set(data, os);
 
                 // 对象
-                } else if (!type.getName().startsWith("java") && !type.getName().startsWith("javax")) {
+                } else {
+                    // 其他数据类型
+                    if (!type.isAnnotationPresent(ChangeModel.class)) {
+                        throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s. Please use %s or %s or %s. (Data models of the above types it needs to be declared as @com.stars.datachange.annotation.ChangeModel)",
+                                "@com.stars.datachange.exception.ReentrantChangeModelProperty", name,
+                                "array", "java.util.Collection", "Custom class"));
+                    }
                     dataChangeToBean(value, Process.create(value.getClass(), new Process()));
                     field.set(data, value);
-
-                    // 其他数据类型
-                } else {
-                    throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s", "@com.stars.datachange.exception.ReentrantChangeModelProperty", name));
                 }
                 continue;
             }
