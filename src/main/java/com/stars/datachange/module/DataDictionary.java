@@ -5,7 +5,7 @@ import com.stars.datachange.model.response.DataDictionaryResult;
 import java.util.Set;
 
 /**
- * 数据字典模型
+ * 数据字典模块
  * @author Hao.
  * @version 1.0
  * @since 2022/8/6 11:34

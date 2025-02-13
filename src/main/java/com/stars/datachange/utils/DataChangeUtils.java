@@ -84,6 +84,70 @@ public final class DataChangeUtils {
     }
 
     /**
+     * 数据转换（集合）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @return java.util.Map
+     * @author zhouhao
+     * @since  2021/9/7 11:14
+     */
+    public static <T> List<Map<String, Object>> dataChange(Collection<T> data) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        data.forEach(o -> result.add(dataChange(o, false)));
+        return result;
+    }
+
+    /**
+     * 数据转换（集合）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @param rollback 是否反转（V转K） 默认false
+     * @return java.util.Map
+     * @author zhouhao
+     * @since  2021/9/7 11:14
+     */
+    public static <T> List<Map<String, Object>> dataChange(Collection<T> data, boolean rollback) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(data)) {
+            data.forEach(o -> result.add(dataChange(o, rollback)));
+        }
+        return result;
+    }
+
+    /**
+     * 数据转换（数组）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @return java.util.Map
+     * @author zhouhao
+     * @since  2021/9/7 11:14
+     */
+    public static <T> List<Map<String, Object>> dataChange(T[] data) {
+        return dataChange(Arrays.asList(data));
+    }
+
+    /**
+     * 数据转换（数组）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @param rollback 是否反转（V转K） 默认false
+     * @return java.util.Map
+     * @author zhouhao
+     * @since  2021/9/7 11:14
+     */
+    public static <T> List<Map<String, Object>> dataChange(T[] data, boolean rollback) {
+        return dataChange(Arrays.asList(data), rollback);
+    }
+
+    /**
      * 数据转换（转换到原对象）
      * <br>
      * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
@@ -94,6 +158,72 @@ public final class DataChangeUtils {
      */
     public static <T> void dataChangeToBean(T data) {
         dataChangeToBean(data, false);
+    }
+
+    /**
+     * 数据转换（转换到原对象）（集合）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     */
+    public static <T> void dataChangeToBean(Collection<T> data) {
+        if (!CollectionUtils.isEmpty(data)) {
+            data.forEach(o -> dataChangeToBean(o, false));
+        }
+    }
+
+    /**
+     * 数据转换（转换到原对象）（集合）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @param rollback 是否反转（V转K） 默认false
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     */
+    public static <T> void dataChangeToBean(Collection<T> data, boolean rollback) {
+        if (!CollectionUtils.isEmpty(data)) {
+            data.forEach(o -> dataChangeToBean(o, rollback));
+        }
+    }
+
+    /**
+     * 数据转换（转换到原对象）（数组）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     */
+    public static <T> void dataChangeToBean(T[] data) {
+        if (Objects.nonNull(data)) {
+            for (T o : data) {
+                dataChangeToBean(o, false);
+            }
+        }
+    }
+
+    /**
+     * 数据转换（转换到原对象）（数组）
+     * <br>
+     * <br>调用此方法，可以使你的属性code，转换为相对应的文字；
+     * <br>支持多选的属性code、 支持位运算的属性code、支持属性code自定义分隔符转换
+     * @param data 数据集
+     * @param rollback 是否反转（V转K） 默认false
+     * @author zhouhao
+     * @since  2022/4/30 10:35
+     */
+    public static <T> void dataChangeToBean(T[] data, boolean rollback) {
+        if (Objects.nonNull(data)) {
+            for (T o : data) {
+                dataChangeToBean(o, rollback);
+            }
+        }
     }
 
     /**
@@ -146,30 +276,41 @@ public final class DataChangeUtils {
                 if (type.isArray()) {
                     final Object[] os = (Object[]) keyO;
                     List<Map<String, Object>> osMaps = new ArrayList<>();
+                    Process process_ = null;
                     for (Object o : os) {
-                        osMaps.add(dataChange(o, Process.create(o.getClass(), new Process())));
+                        if (Objects.isNull(process_)) {
+                            process_ = Process.create(o.getClass(), new Process());
+                        }
+                        osMaps.add(dataChange(o, process_));
                     }
                     result.put(key, osMaps);
-
-                // 单列集合
-                } else if (Collection.class.isAssignableFrom(type)) {
-                    final Collection os = (Collection) keyO;
-                    List<Map<String, Object>> osMaps = new ArrayList<>();
-                    for (Object o : os) {
-                        osMaps.add(dataChange(o, Process.create(o.getClass(), new Process())));
-                    }
-                    result.put(key, osMaps);
-
-                // 对象
-                } else {
-                    // 其他数据类型
-                    if (!type.isAnnotationPresent(ChangeModel.class)) {
-                        throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s. Please use %s or %s or %s. (Data models of the above types it needs to be declared as @com.stars.datachange.annotation.ChangeModel)",
-                                "@com.stars.datachange.exception.ReentrantChangeModelProperty", key,
-                                "array", "java.util.Collection", "custom class"));
-                    }
-                    result.put(key, dataChange(keyO, Process.create(keyO.getClass(), new Process())));
+                    continue;
                 }
+                // 单列集合
+                if (Collection.class.isAssignableFrom(type)) {
+                    final Collection<?> os = (Collection<?>) keyO;
+                    List<Map<String, Object>> osMaps = new ArrayList<>();
+                    Process process_ = null;
+                    for (Object o : os) {
+                        if (Objects.isNull(process_)) {
+                            process_ = Process.create(o.getClass(), new Process());
+                        }
+                        osMaps.add(dataChange(o, process_));
+                    }
+                    result.put(key, osMaps);
+                    continue;
+                }
+                // 对象
+                if (type.isAnnotationPresent(ChangeModel.class)) {
+                    result.put(key, dataChange(keyO, Process.create(keyO.getClass(), new Process())));
+                    continue;
+                }
+                // 其他数据类型
+                throw new ReentrantChangeModelPropertyException(String.format("Misused @ReentrantChangeModelProperty, from attributes %s. @ReentrantChangeModelProperty are use only allowed on properties such as array, java.util.Collection, custom class, etc. by @ReentrantChangeModelProperty the properties of the markings, need to mark @ChangeModel on the corresponding data model.", key));
+            }
+
+            // 数据转换注解仅作为标识，跳过数据转换逻辑
+            if(process.getChangeModel().source().equals(ChangeModel.Source.NONE)) {
                 continue;
             }
 
@@ -246,30 +387,38 @@ public final class DataChangeUtils {
                 // 数组
                 if (type.isArray()) {
                     final Object[] os = (Object[]) value;
+                    Process process_ = null;
                     for (Object o : os) {
-                        dataChangeToBean(o, Process.create(o.getClass(), new Process()));
+                        if (Objects.isNull(process_)) {
+                            process_ = Process.create(o.getClass(), new Process());
+                        }
+                        dataChangeToBean(o, process_);
                     }
-                    field.set(data, os);
-
-                // 单列集合
-                } else if (Collection.class.isAssignableFrom(type)) {
-                    final Collection os = (Collection) value;
-                    for (Object o : os) {
-                        dataChangeToBean(o, Process.create(o.getClass(), new Process()));
-                    }
-                    field.set(data, os);
-
-                // 对象
-                } else {
-                    // 其他数据类型
-                    if (!type.isAnnotationPresent(ChangeModel.class)) {
-                        throw new ReentrantChangeModelPropertyException(String.format("Misused %s, from attributes %s. Please use %s or %s or %s. (Data models of the above types it needs to be declared as @com.stars.datachange.annotation.ChangeModel)",
-                                "@com.stars.datachange.exception.ReentrantChangeModelProperty", name,
-                                "array", "java.util.Collection", "Custom class"));
-                    }
-                    dataChangeToBean(value, Process.create(value.getClass(), new Process()));
-                    field.set(data, value);
+                    continue;
                 }
+                // 单列集合
+                if (Collection.class.isAssignableFrom(type)) {
+                    final Collection<?> os = (Collection<?>) value;
+                    Process process_ = null;
+                    for (Object o : os) {
+                        if (Objects.isNull(process_)) {
+                            process_ = Process.create(o.getClass(), new Process());
+                        }
+                        dataChangeToBean(o, process_);
+                    }
+                    continue;
+                }
+                // 对象
+                if (type.isAnnotationPresent(ChangeModel.class)) {
+                    dataChangeToBean(value, Process.create(value.getClass(), new Process()));
+                    continue;
+                }
+                // 其他数据类型
+                throw new ReentrantChangeModelPropertyException(String.format("Misused @ReentrantChangeModelProperty, from attributes %s. @ReentrantChangeModelProperty are use only allowed on properties such as array, java.util.Collection, custom class, etc. by @ReentrantChangeModelProperty the properties of the markings, need to mark @ChangeModel on the corresponding data model.", name));
+            }
+
+            // 数据转换注解仅作为标识，跳过数据转换逻辑
+            if(process.getChangeModel().source().equals(ChangeModel.Source.NONE)) {
                 continue;
             }
 
@@ -709,16 +858,8 @@ public final class DataChangeUtils {
 
             // 数据转换来源：数据字典
             if(process.getChangeModel().source().equals(ChangeModel.Source.DB)) {
-                // 数据模型名称
-                String key = StringUtils.isEmpty(process.getChangeModel().modelName())
-                        ? dataClass.getSimpleName().substring(0,1).toLowerCase().concat(dataClass.getSimpleName().substring(1))
-                        : process.getChangeModel().modelName();
-                // v1.7 因最开始key的使用逻辑已经定义。故：退而求其次——modelName="-1"，认为查询整个字典表
-                if ("-1".equals(key)) {
-                    key = null;
-                }
                 try{
-                    process.setDictionaryResult(dataDictionary.dataDictionary(key));
+                    process.setDictionaryResult(dataDictionary.dataDictionary(process.getChangeModel().modelName()));
                 }catch (ChangeException e){
                     throw e;
                 }catch (Exception e){
@@ -743,11 +884,16 @@ public final class DataChangeUtils {
                     continue;
                 }
 
+                // 数据转换注解仅作为标识，跳过其他处理过程
+                if(process.getChangeModel().source().equals(ChangeModel.Source.NONE)) {
+                   continue;
+                }
+
                 // 默认扫描数据模型下所有属性的注解
                 if(process.getChangeModel().compatible().length == 0) {
                     compatible.addAll(Arrays.stream(field.getDeclaredAnnotations())
-                            .filter(o -> !o.annotationType().getName().equals(ChangeModelProperty.class.getName()))
                             .map(Annotation::annotationType)
+                            .filter(aClass -> !aClass.getName().equals(ChangeModelProperty.class.getName()))
                             .collect(Collectors.toSet()));
                 }
 

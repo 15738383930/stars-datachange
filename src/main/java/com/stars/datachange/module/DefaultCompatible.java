@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * 默认兼容模型
+ * 默认兼容模块
  * @author Hao.
  * @version 1.0
  * @since 2021/12/27 14:43

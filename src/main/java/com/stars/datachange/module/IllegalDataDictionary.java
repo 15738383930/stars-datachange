@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 /**
- * 非法的数据字典
+ * 非法的数据字典模块
  * @author Hao.
  * @version 1.0
  * @since 2022/8/6 11:34

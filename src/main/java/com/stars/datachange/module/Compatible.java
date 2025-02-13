@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * 兼容模型
+ * 兼容模块
  * @author Hao.
  * @version 1.0
  * @since 2021/12/27 15:06

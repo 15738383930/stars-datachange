@@ -41,12 +41,12 @@ public @interface ChangeModel {
 
     /**
      * Data conversion source mode<p>
-     *     Provide {@link ChangeModel#modelCode} mode and database dictionary table model
+     *     Provide {@link ChangeModel#modelCode} mode and database dictionary table model, NONE used as an identifier only
      * @return Source
      * @author zhouhao
      * @since  2021/9/13 14:06
      */
-    Source source() default Source.ENUM;
+    Source source() default Source.NONE;
 
     /**
      * Data model name<p>
@@ -80,7 +80,10 @@ public @interface ChangeModel {
         ENUM,
 
         /** Data Dictionary */
-        DB
+        DB,
+
+        /** identifier */
+        NONE
 
         ;
     }
