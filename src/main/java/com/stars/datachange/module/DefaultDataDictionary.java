@@ -3,6 +3,7 @@ package com.stars.datachange.module;
 import com.stars.datachange.autoconfigure.StarsProperties;
 import com.stars.datachange.mapper.StarsDictionaryMapper;
 import com.stars.datachange.model.response.DataDictionaryResult;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,10 +26,11 @@ public class DefaultDataDictionary implements DataDictionary {
     @Resource
     private StarsDictionaryMapper starsDictionaryMapper;
 
-    public static final boolean CACHE_OPEN = StarsProperties.cache.isOpen();
+    @Value("${stars.cache.open}")
+    public boolean cacheOpen;
 
     @Override
-    @Cacheable(key = "'stars-dictionary::' + #key", value = "stars", condition = "#root.target.CACHE_OPEN == true")
+    @Cacheable(key = "'stars-dictionary::' + #key", value = "stars", condition = "#root.target.cacheOpen == true")
     public Set<DataDictionaryResult> dataDictionary(String key) {
         return starsDictionaryMapper.findList(StarsProperties.dictionary, key);
     }
