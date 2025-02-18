@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.8.1</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 [GitHub传送门](https://github.com/15738383930/stars-datachange)
