@@ -26,7 +26,7 @@ public class DefaultDataDictionary implements DataDictionary {
     @Resource
     private StarsDictionaryMapper starsDictionaryMapper;
 
-    @Value("${stars.cache.open}")
+    @Value("${stars.cache.open:false}")
     public boolean cacheOpen;
 
     @Override

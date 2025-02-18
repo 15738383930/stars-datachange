@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * 数据转换结果标识<p>
  *     提供基于注解的数据转换等操作
  * @author Hao.
- * @version 1.0
+ * @version 2.0
  * @since 2025/2/11 14:51
  */
 @Target(ElementType.METHOD)
@@ -18,7 +18,7 @@ public @interface ChangeResult {
 
     /**
      * reverse v to k
-     * @return
+     * @return boolean
      */
     boolean rollback() default false;
 }

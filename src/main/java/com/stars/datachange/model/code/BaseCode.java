@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * 字典规范<p>
- *     <p>凡是字典枚举模型，都需实现该规范。</p>
+ *     凡是字典枚举模型，都需实现该规范。
  * @author Hao.
  * @version 1.3
  * @since 2022/5/28 13:07
@@ -20,9 +20,7 @@ public interface BaseCode {
      * @since 2022/5/28 13:00
      * @return 属性名
      */
-    default String t() {
-        return null;
-    }
+    String t();
 
     /**
      * 属性代码<p>
@@ -30,9 +28,7 @@ public interface BaseCode {
      * @since 2022/5/28 13:00
      * @return 属性代码
      */
-    default String k() {
-        return null;
-    }
+    String k();
 
     /**
      * 属性值<p>
@@ -40,9 +36,7 @@ public interface BaseCode {
      * @since  2022/5/28 13:00
      * @return 属性值
      */
-    default String v() {
-        return null;
-    }
+    String v();
 
     static String value(Class<? extends Enum> modelCode, String t, String k) {
         return change(modelCode, t, k, null);

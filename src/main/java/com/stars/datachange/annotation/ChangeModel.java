@@ -41,12 +41,13 @@ public @interface ChangeModel {
 
     /**
      * Data conversion source mode<p>
-     *     Provide {@link ChangeModel#modelCode} mode and database dictionary table model, NONE used as an identifier only
+     *     Provide {@link ChangeModel#modelCode} mode and database dictionary table mode<p>
+     *    {@link Source#NONE}, skip data change logic loading
      * @return Source
      * @author zhouhao
      * @since  2021/9/13 14:06
      */
-    Source source() default Source.NONE;
+    Source source() default Source.AUTO;
 
     /**
      * Data model name<p>
@@ -82,7 +83,16 @@ public @interface ChangeModel {
         /** Data Dictionary */
         DB,
 
-        /** identifier */
+        /**
+         * <ul>
+         *  <li>when {@link ChangeModel#value()} or {@link ChangeModel#modelCode()} has value and is not {@link Enum}, will auto switch to {@link Source#ENUM};</li>
+         *  <li>when {@link ChangeModel#modelName()} has value and ({@link ChangeModel#value()} and {@link ChangeModel#modelCode()}) is {@link Enum}, will auto switch to {@link Source#DB}</li>
+         *  <li>when {@link ChangeModel#modelName()} not has value and ({@link ChangeModel#value()} and {@link ChangeModel#modelCode()}) is {@link Enum}, will auto switch to {@link Source#NONE}</li>
+         * </ul>
+         */
+        AUTO,
+
+        /** skip data change logic loading */
         NONE
 
         ;

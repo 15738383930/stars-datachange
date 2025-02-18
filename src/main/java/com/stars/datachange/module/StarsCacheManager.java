@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 缓存模块管理器
  * @author Hao.
- * @version 1.0
+ * @version 2.0
  * @since 2025/2/13 15:41
  */
 public class StarsCacheManager implements CacheManager {

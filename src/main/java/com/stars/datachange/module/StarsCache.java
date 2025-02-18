@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 缓存模块
  * @author Hao.
- * @version 1.0
+ * @version 2.0
  * @since 2025/2/13 15:42
  */
 public class StarsCache extends AbstractValueAdaptingCache {

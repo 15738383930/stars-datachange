@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 数据转换模型的重入属性标识
  * @author Hao.
- * @version 1.0
+ * @version 1.8
  * @since 2024/9/27 11:11
  */
 @Target(ElementType.FIELD)
