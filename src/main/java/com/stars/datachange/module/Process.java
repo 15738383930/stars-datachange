@@ -169,6 +169,7 @@ public class Process {
             }catch (ChangeException e){
                 throw e;
             }catch (Exception e){
+                log.error("Failed to bind data dictionary: {}", e.toString());
                 throw new ChangeModelException("Failed to bind data dictionary, please check configuration!");
             }
             if(CollectionUtils.isEmpty(process.getDictionaryResult())){

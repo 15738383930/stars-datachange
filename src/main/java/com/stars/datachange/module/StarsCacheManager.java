@@ -81,7 +81,7 @@ public class StarsCacheManager implements CacheManager {
                     .build(new CacheLoader<Object, Object>() {
                         @Override
                         public Object load(Object key) {
-                            String s = key.toString().replace("dictionary::", "");
+                            String s = key.toString().replace(DefaultDataDictionary.DICTIONARY_KEY, "");
                             if (StringUtils.isEmpty(s)) {
                                 s = null;
                             }

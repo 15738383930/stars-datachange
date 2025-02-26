@@ -23,6 +23,8 @@ import java.util.Set;
 @ConditionalOnSingleCandidate(DataDictionary.class)
 public class DefaultDataDictionary implements DataDictionary {
 
+    public static final String DICTIONARY_KEY = "stars-dictionary::";
+
     @Resource
     private StarsDictionaryMapper starsDictionaryMapper;
 
@@ -30,7 +32,7 @@ public class DefaultDataDictionary implements DataDictionary {
     public boolean cacheOpen;
 
     @Override
-    @Cacheable(key = "'stars-dictionary::' + #key", value = "stars", condition = "#root.target.cacheOpen == true")
+    @Cacheable(key = "#root.target.DICTIONARY_KEY + #key", value = "stars", condition = "#root.target.cacheOpen == true")
     public Set<DataDictionaryResult> dataDictionary(String key) {
         return starsDictionaryMapper.findList(StarsProperties.dictionary, key);
     }
