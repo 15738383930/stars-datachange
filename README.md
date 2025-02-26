@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.gitee.xuan_zheng</groupId>
     <artifactId>stars-datachange</artifactId>
-    <version>1.8.1</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 [GitHub传送门](https://github.com/15738383930/stars-datachange)
@@ -99,6 +99,7 @@ ps： 需要切换到DB源模式，modelName——数据模型名称（值默认
 
 #### 版本更新说明
 
+- v2.0：重大升级 [v2.0](https://blog.csdn.net/qq_36206259/article/details/145636230)
 - v1.8：添加了数据转换的重入功能 [v1.8特色](https://blog.csdn.net/qq_36206259/article/details/142638600)
 - v1.7：添加了属性别名配置；添加了默认数据字典的全表查询逻辑；mapper配置文件目录更换 [v1.7特色](https://blog.csdn.net/qq_36206259/article/details/140540848)
 - v1.6.0：添加了数据转换反转功能；添加了非数据库项目环境下的使用配置 [v1.6.0特色](https://blog.csdn.net/qq_36206259/article/details/129553987)
